@@ -18,6 +18,11 @@ This MVP accepts a user prompt, analyzes it, applies basic prompt-cleaning logic
 * Word count calculation
 * Character count calculation
 * Basic token estimation
+- Email detection
+- SSN detection
+- Phone number detection
+- Risk classification (HIGH / LOW)
+- Risk reason reporting
 * Prompt transformations:
 
   * Uppercase version
@@ -101,6 +106,16 @@ http://127.0.0.1:8000/docs
 
 * Improve prompt optimization logic
 * Add regex-based PII detection
+## Roadmap
+
+* Improve prompt optimization logic
+* Add advanced PII detection
+* Add API key detection
+* Add department-level budget tracking
+* Add model routing logic
+* Add request logging
+* Add analytics dashboard
+* Deploy public demo
 * Add model routing logic
 * Add department-level budget tracking
 * Add request logging
