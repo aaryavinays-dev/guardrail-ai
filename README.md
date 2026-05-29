@@ -102,14 +102,12 @@ Open Swagger docs:
 http://127.0.0.1:8000/docs
 ```
 
-## Roadmap
 
-* Improve prompt optimization logic
-* Add regex-based PII detection
 ## Roadmap
 
 * Improve prompt optimization logic
 * Add advanced PII detection
+* Add regex-based PII detection
 * Add API key detection
 * Add department-level budget tracking
 * Add model routing logic
