@@ -18,11 +18,17 @@ This MVP accepts a user prompt, analyzes it, applies basic prompt-cleaning logic
 * Word count calculation
 * Character count calculation
 * Basic token estimation
-- Email detection
-- SSN detection
-- Phone number detection
-- Risk classification (HIGH / LOW)
-- Risk reason reporting
+* Email detection
+* SSN detection
+* Phone number detection
+* Credit card detection
+* Risk score calculation
+- LOW / MEDIUM / HIGH risk classification
+* Weighted risk scoring:
+  - Email: 20
+  - Phone: 20
+  - SSN: 50
+  - Credit Card: 50
 * Prompt transformations:
 
   * Uppercase version
@@ -81,6 +87,15 @@ Example response:
   "estimated_tokens": 13
 }
 ```
+{
+  "prompt": "My SSN is 123-45-6789 and my card is 4111-1111-1111-1111",
+  "risk_level": "HIGH",
+  "risk_score": 100,
+  "risk_reasons": [
+    "SSN detected",
+    "Credit card detected"
+  ]
+}
 
 ## How to Run Locally
 
@@ -106,6 +121,33 @@ http://127.0.0.1:8000/docs
 ## Roadmap
 
 * Improve prompt optimization logic
+* Add CRITICAL risk level (100+ score)
+* Support multiple credit card formats
+  * 4111-1111-1111-1111
+  * 4111111111111111
+  * 4111 1111 1111 1111
+* Add API Key detection
+* Add Password detection
+* Add Bank Account detection
+* Add Address detection
+* Refactor code into reusable functions
+* Improve risk scoring engine
+* Add configurable risk rules
+* Add prompt category classification
+* Add prompt quality scoring
+* Add prompt improvement suggestions
+* Add OpenAI API integration
+* Add audit logging and prompt history
+* Add PostgreSQL database integration
+* Add user authentication and authorization
+* Build React frontend dashboard
+* Add analytics and reporting dashboard
+* Add model routing (GPT, Claude, Gemini)
+* Add enterprise policy engine
+* Add document upload and analysis
+* Add RAG knowledge base integration
+* Add AI agents for automated risk investigation
+* Deploy GuardRail AI to cloud
 * Add advanced PII detection
 * Add regex-based PII detection
 * Add API key detection
@@ -118,7 +160,6 @@ http://127.0.0.1:8000/docs
 * Add department-level budget tracking
 * Add request logging
 * Add dashboard for token savings and blocked prompts
-* Deploy public demo
 
 ## Project Goal
 

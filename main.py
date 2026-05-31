@@ -36,22 +36,35 @@ def analyze_prompt(data: dict):
     email_detected = re.search(r"\S+@\S+\.\S+", prompt)
     ssn_detected = re.search(r"\d{3}-\d{2}-\d{4}", prompt)
     phone_detected = re.search(r"\d{3}-\d{3}-\d{4}", prompt)
-
+    credit_card_detected = re.search(r"\d{4}-\d{4}-\d{4}-\d{4}", prompt)
     risk_reasons = []
 
+    risk_score = 0
+
     if email_detected:
+        risk_score = risk_score + 20
         risk_reasons.append("Email detected")
 
     if ssn_detected:
+        risk_score = risk_score + 50
         risk_reasons.append("SSN detected")
 
     if phone_detected:
+        risk_score = risk_score + 20
         risk_reasons.append("Phone number detected")
 
-    if risk_reasons:
-        risk_level = "HIGH"
+    if credit_card_detected:
+        risk_score = risk_score + 50
+        risk_reasons.append("Credit card detected")
+
+    if risk_score <= 20:
+     risk_level = "LOW"
+
+    elif risk_score <= 50:
+     risk_level = "MEDIUM"
+
     else:
-        risk_level = "LOW"
+     risk_level = "HIGH"
 
     return {
         "prompt": prompt,
@@ -67,5 +80,6 @@ def analyze_prompt(data: dict):
         "optimized_tokens": optimized_tokens,
         "tokens_saved": tokens_saved,
         "risk_level": risk_level,
+        "risk_score": risk_score,
         "risk_reasons": risk_reasons
     }
