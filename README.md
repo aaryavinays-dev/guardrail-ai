@@ -1,58 +1,150 @@
 # GuardRail AI
 
-GuardRail AI is an early-stage FastAPI backend project for AI governance, prompt optimization, and token cost reduction.
+GuardRail AI is an AI governance and prompt analysis platform designed to reduce token costs, detect sensitive information, and enforce enterprise AI usage policies before prompts reach external LLM providers.
 
-## Problem
+---
 
-Enterprises are rapidly adopting LLMs across departments, but many AI requests contain unnecessary prompt fluff, repeated text, email signatures, and non-essential wording. Since LLM providers charge based on token usage, this creates avoidable AI spending.
+# Problem
 
-## Current MVP
+Organizations are rapidly adopting AI tools such as GPT, Claude, and Gemini.
 
-This MVP accepts a user prompt, analyzes it, applies basic prompt-cleaning logic, and returns estimated token savings.
+Many prompts contain:
 
-## Current Features
+* Sensitive information (PII)
+* Unnecessary prompt fluff
+* Repeated wording
+* Email signatures
+* Excessive context
 
-* FastAPI backend setup
-* Root health-check endpoint
-* `/analyze` POST endpoint
+This increases:
+
+* AI spending
+* Security risk
+* Compliance risk
+* Data leakage risk
+
+GuardRail AI aims to detect and prevent these issues before prompts are sent to AI models.
+
+---
+
+# Current MVP
+
+The current MVP accepts a prompt, analyzes its content, detects sensitive information, calculates risk scores, performs basic prompt optimization, and estimates token savings.
+
+---
+
+# Current Features
+
+## Prompt Analytics
+
 * Word count calculation
 * Character count calculation
-* Basic token estimation
-* Email detection
-* SSN detection
-* Phone number detection
-* Credit card detection
-* Risk score calculation
-- LOW / MEDIUM / HIGH risk classification
-* Weighted risk scoring:
-  - Email: 20
-  - Phone: 20
-  - SSN: 50
-  - Credit Card: 50
-* Prompt transformations:
+* Character count without spaces
+* Uppercase transformation
+* Lowercase transformation
+* Reverse prompt transformation
+* No-space prompt transformation
 
-  * Uppercase version
-  * Lowercase version
-  * Reversed prompt
-  * No-space version
-* Basic prompt optimization by removing simple fluff phrases
-* Estimated token savings calculation
+## Prompt Optimization
 
-## Tech Stack
+Removes common prompt fluff phrases:
+
+* Best regards
+* Sincerely
+* Thank you
+* Please kindly
+
+Calculates:
+
+* Estimated tokens
+* Optimized tokens
+* Tokens saved
+
+## Sensitive Data Detection
+
+### Email Detection
+
+Example:
+
+[test@gmail.com](mailto:test@gmail.com)
+
+### Phone Detection
+
+Example:
+
+734-555-1234
+
+### SSN Detection
+
+Example:
+
+123-45-6789
+
+### Credit Card Detection
+
+Example:
+
+4111-1111-1111-1111
+
+## Risk Scoring Engine
+
+### Risk Weights
+
+| Detection   | Score |
+| ----------- | ----- |
+| Email       | 20    |
+| Phone       | 20    |
+| SSN         | 50    |
+| Credit Card | 50    |
+
+### Risk Levels
+
+| Score | Risk Level |
+| ----- | ---------- |
+| 0-20  | LOW        |
+| 21-50 | MEDIUM     |
+| 51-99 | HIGH       |
+| 100+  | CRITICAL   |
+
+---
+
+# Software Engineering Improvements
+
+Version 1.1 introduced reusable helper functions:
+
+* detect_email()
+* detect_ssn()
+* detect_phone()
+* detect_credit_card()
+
+Benefits:
+
+* Cleaner code
+* Better readability
+* Easier testing
+* Easier maintenance
+* Improved scalability
+
+---
+
+# Tech Stack
 
 * Python
 * FastAPI
 * Uvicorn
+* Regex
 * Git
 * GitHub
 
-## API Endpoints
+---
 
-### GET `/`
+# API Endpoints
 
-Returns a basic health-check message.
+## GET /
 
-Example response:
+Health Check Endpoint
+
+Response:
 
 ```json
 {
@@ -62,42 +154,32 @@ Example response:
 
 ---
 
-### POST `/analyze`
+## POST /analyze
 
-Accepts a prompt and returns analysis details.
-
-Example request:
+Request:
 
 ```json
 {
-  "prompt": "Best regards to Mr Vinay S Aarya thank you Sincerely"
+  "prompt": "My email is test@gmail.com and my SSN is 123-45-6789"
 }
 ```
 
-Example response:
+Example Response:
 
 ```json
 {
-  "prompt": "Best regards to Mr Vinay S Aarya thank you Sincerely",
-  "word_count": 10,
-  "character_count": 52,
-  "optimized_prompt": "to Mr Vinay S Aarya",
-  "optimized_tokens": 6,
-  "tokens_saved": 7,
-  "estimated_tokens": 13
-}
-```
-{
-  "prompt": "My SSN is 123-45-6789 and my card is 4111-1111-1111-1111",
   "risk_level": "HIGH",
-  "risk_score": 100,
+  "risk_score": 70,
   "risk_reasons": [
-    "SSN detected",
-    "Credit card detected"
+    "Email detected",
+    "SSN detected"
   ]
 }
+```
 
-## How to Run Locally
+---
+
+# How To Run Locally
 
 Install dependencies:
 
@@ -105,62 +187,104 @@ Install dependencies:
 pip install fastapi uvicorn
 ```
 
-Run the server:
+Run application:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Open Swagger docs:
+Open Swagger Documentation:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
+---
 
-## Roadmap
+# Latest Progress (Version 1.1)
 
-* Improve prompt optimization logic
-* Add CRITICAL risk level (100+ score)
+Completed:
+
+* Added Email Detection
+* Added SSN Detection
+* Added Phone Detection
+* Added Credit Card Detection
+* Added Weighted Risk Scoring
+* Added LOW / MEDIUM / HIGH / CRITICAL Risk Levels
+* Refactored detection logic into reusable helper functions
+* Added Prompt Optimization
+* Added Token Savings Estimation
+* Added GitHub Version Control
+
+---
+
+# Lessons Learned
+
+## Python Fundamentals
+
+* Functions must be called to execute
+* Parameters receive data
+* Arguments provide data
+* return sends data back to the caller
+* Python evaluates the right side of assignments first
+
+## Software Engineering
+
+* Functions should have one responsibility
+* Refactoring improves maintainability
+* Helper functions improve readability
+* Reusable code is better than duplicated code
+
+---
+
+# Roadmap
+
+## Next Feature
+
 * Support multiple credit card formats
-  * 4111-1111-1111-1111
-  * 4111111111111111
-  * 4111 1111 1111 1111
-* Add API Key detection
-* Add Password detection
-* Add Bank Account detection
-* Add Address detection
-* Refactor code into reusable functions
-* Improve risk scoring engine
-* Add configurable risk rules
-* Add prompt category classification
-* Add prompt quality scoring
-* Add prompt improvement suggestions
-* Add OpenAI API integration
-* Add audit logging and prompt history
-* Add PostgreSQL database integration
-* Add user authentication and authorization
-* Build React frontend dashboard
-* Add analytics and reporting dashboard
-* Add model routing (GPT, Claude, Gemini)
-* Add enterprise policy engine
-* Add document upload and analysis
-* Add RAG knowledge base integration
-* Add AI agents for automated risk investigation
-* Deploy GuardRail AI to cloud
-* Add advanced PII detection
-* Add regex-based PII detection
-* Add API key detection
-* Add department-level budget tracking
-* Add model routing logic
-* Add request logging
-* Add analytics dashboard
-* Deploy public demo
-* Add model routing logic
-* Add department-level budget tracking
-* Add request logging
-* Add dashboard for token savings and blocked prompts
 
-## Project Goal
+Examples:
 
-The long-term goal is to build an enterprise AI governance gateway that helps organizations reduce AI token waste, enforce usage policies, and prevent sensitive data leakage before requests reach external LLM providers.
+* 4111-1111-1111-1111
+* 4111111111111111
+* 4111 1111 1111 1111
+
+## Future Features
+
+* API Key Detection
+* Password Detection
+* Bank Account Detection
+* Address Detection
+* Advanced PII Detection
+* Configurable Risk Rules
+* Prompt Quality Scoring
+* Prompt Improvement Suggestions
+* Request Logging
+* Audit Logging
+* Prompt History
+* PostgreSQL Integration
+* User Authentication
+* OpenAI Integration
+* Multi-Model Routing (GPT, Claude, Gemini)
+* Analytics Dashboard
+* Enterprise Policy Engine
+* RAG Knowledge Base Integration
+* Document Upload and Analysis
+* AI Agents for Risk Investigation
+* Department-Level Budget Tracking
+* Cloud Deployment
+* Public Demo
+
+---
+
+# Project Goal
+
+The long-term goal is to build an enterprise AI governance gateway that:
+
+* Reduces AI token waste
+* Detects sensitive information
+* Enforces enterprise AI policies
+* Tracks AI usage and costs
+* Prevents data leakage
+* Routes requests to appropriate AI models
+* Provides governance, compliance, and observability for enterprise AI systems
