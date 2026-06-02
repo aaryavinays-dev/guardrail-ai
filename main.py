@@ -3,9 +3,30 @@ import re
 
 app = FastAPI()
 
+
 @app.get("/")
 def home():
     return {"message": "GuardRail AI is running"}
+
+
+def detect_email(prompt):
+    email_detected = re.search(r"\S+@\S+\.\S+", prompt)
+    return email_detected
+
+
+def detect_ssn(prompt):
+    ssn_detected = re.search(r"\d{3}-\d{2}-\d{4}", prompt)
+    return ssn_detected
+
+
+def detect_phone(prompt):
+    phone_detected = re.search(r"\d{3}-\d{3}-\d{4}", prompt)
+    return phone_detected
+
+
+def detect_credit_card(prompt):
+    credit_card_detected = re.search(r"\d{4}-\d{4}-\d{4}-\d{4}", prompt)
+    return credit_card_detected
 
 
 @app.post("/analyze")
@@ -33,12 +54,12 @@ def analyze_prompt(data: dict):
     optimized_tokens = int(len(optimized_prompt.split()) * 1.3)
     tokens_saved = estimated_tokens - optimized_tokens
 
-    email_detected = re.search(r"\S+@\S+\.\S+", prompt)
-    ssn_detected = re.search(r"\d{3}-\d{2}-\d{4}", prompt)
-    phone_detected = re.search(r"\d{3}-\d{3}-\d{4}", prompt)
-    credit_card_detected = re.search(r"\d{4}-\d{4}-\d{4}-\d{4}", prompt)
-    risk_reasons = []
+    email_detected = detect_email(prompt)
+    ssn_detected = detect_ssn(prompt)
+    phone_detected = detect_phone(prompt)
+    credit_card_detected = detect_credit_card(prompt)
 
+    risk_reasons = []
     risk_score = 0
 
     if email_detected:
@@ -58,13 +79,16 @@ def analyze_prompt(data: dict):
         risk_reasons.append("Credit card detected")
 
     if risk_score <= 20:
-     risk_level = "LOW"
+        risk_level = "LOW"
 
     elif risk_score <= 50:
-     risk_level = "MEDIUM"
+        risk_level = "MEDIUM"
+
+    elif risk_score <= 99:
+        risk_level = "HIGH"
 
     else:
-     risk_level = "HIGH"
+        risk_level = "CRITICAL"
 
     return {
         "prompt": prompt,
