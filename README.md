@@ -6,7 +6,7 @@ GuardRail AI is an AI governance and prompt analysis platform designed to reduce
 
 # Problem
 
-Organizations are rapidly adopting AI tools such as GPT, Claude, and Gemini.
+Organizations are rapidly adopting AI tools such as GPT, Claude, Copilot, LLama Family and Gemini.
 
 Many prompts contain:
 
@@ -110,7 +110,7 @@ Example:
 
 # Software Engineering Improvements
 
-Version 1.1 introduced reusable helper functions:
+Version 1.2 introduced reusable helper functions and enhanced regex detection capabilities:
 
 * detect_email()
 * detect_ssn()
@@ -201,14 +201,22 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# Latest Progress (Version 1.1)
+# Latest Progress (Version 1.2)
 
 Completed:
 
 * Added Email Detection
+* Added reusable regex pattern supporting:
+  - Hyphen separated credit cards
+  - Space separated credit cards
+  - Continuous 16-digit credit cards
 * Added SSN Detection
 * Added Phone Detection
 * Added Credit Card Detection
+* Added support for multiple credit card formats
+  - 4111-1111-1111-1111
+  - 4111 1111 1111 1111
+  - 4111111111111111
 * Added Weighted Risk Scoring
 * Added LOW / MEDIUM / HIGH / CRITICAL Risk Levels
 * Refactored detection logic into reusable helper functions
@@ -227,6 +235,9 @@ Completed:
 * Arguments provide data
 * return sends data back to the caller
 * Python evaluates the right side of assignments first
+* Regex OR operator (|)
+* Regex optional operator (?)
+* Built a reusable regex for multiple credit card formats
 
 ## Software Engineering
 
@@ -239,15 +250,6 @@ Completed:
 
 # Roadmap
 
-## Next Feature
-
-* Support multiple credit card formats
-
-Examples:
-
-* 4111-1111-1111-1111
-* 4111111111111111
-* 4111 1111 1111 1111
 
 ## Future Features
 

@@ -25,7 +25,7 @@ def detect_phone(prompt):
 
 
 def detect_credit_card(prompt):
-    credit_card_detected = re.search(r"\d{4}-\d{4}-\d{4}-\d{4}", prompt)
+    credit_card_detected = re.search(r"\d{4}(-| )?\d{4}(-| )?\d{4}(-| )?\d{4}", prompt)
     return credit_card_detected
 
 
