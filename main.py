@@ -37,8 +37,18 @@ def detect_password(prompt):
     return password_detected
 
 def detect_prompt_injection(prompt):
-    prompt_injection_detected = re.search(r"Ignore previous instructions", prompt, re.IGNORECASE)
-    return prompt_injection_detected
+    suspicious_patterns = [
+        "Ignore previous instructions",
+        "Reveal system prompt",
+        "Bypass policy",
+        "Forget your rules"
+    ]
+
+    for pattern in suspicious_patterns:
+        if re.search(pattern, prompt, re.IGNORECASE):
+            return True
+
+    return False
 
 def determine_action(risk_score):
     if risk_score <= 20:
