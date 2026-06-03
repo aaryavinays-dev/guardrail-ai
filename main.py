@@ -32,6 +32,10 @@ def detect_api_key(prompt):
     api_key_detected = re.search(r"sk-", prompt)
     return api_key_detected
 
+def detect_password(prompt):
+    password_detected = re.search(r"password", prompt, re.IGNORECASE)
+    return password_detected
+
 def determine_action(risk_score):
     if risk_score <= 20:
         action = "ALLOW"
@@ -75,6 +79,7 @@ def analyze_prompt(data: dict):
     phone_detected = detect_phone(prompt)
     credit_card_detected = detect_credit_card(prompt)
     api_key_detected = detect_api_key(prompt)
+    password_detected = detect_password(prompt)
     
     risk_reasons = []
     risk_score = 0
@@ -95,9 +100,15 @@ def analyze_prompt(data: dict):
         risk_score = risk_score + 50
         risk_reasons.append("Credit card detected")
 
+    if password_detected:
+        risk_score = risk_score + 100
+        risk_reasons.append("Password detected")
+
     if api_key_detected:
         risk_score = risk_score + 100
         risk_reasons.append("API Key detected")
+
+    
 
     if risk_score <= 20:
         risk_level = "LOW"
@@ -111,7 +122,8 @@ def analyze_prompt(data: dict):
     else:
         risk_level = "CRITICAL"
 
-        action = determine_action(risk_score)
+    
+    action = determine_action(risk_score)
 
 
     return {
