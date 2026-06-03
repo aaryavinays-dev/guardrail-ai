@@ -14,11 +14,12 @@ PII Detection Engine
     └── API Key Detection
     ↓
 Risk Scoring Engine
-    ↓
+↓
 Risk Classification
-    ├── LOW
-    ├── MEDIUM
-    ├── HIGH
-    └── CRITICAL
-    ↓
+↓
+Decision Engine
+├── ALLOW
+├── WARN
+└── BLOCK
+↓
 JSON Response

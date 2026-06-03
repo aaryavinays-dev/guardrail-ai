@@ -32,6 +32,18 @@ def detect_api_key(prompt):
     api_key_detected = re.search(r"sk-", prompt)
     return api_key_detected
 
+def determine_action(risk_score):
+    if risk_score <= 20:
+        action = "ALLOW"
+
+    elif risk_score <= 99:
+        action = "WARN"
+
+    else:
+        action = "BLOCK"
+
+    return action
+
 
 @app.post("/analyze")
 def analyze_prompt(data: dict):
@@ -63,7 +75,7 @@ def analyze_prompt(data: dict):
     phone_detected = detect_phone(prompt)
     credit_card_detected = detect_credit_card(prompt)
     api_key_detected = detect_api_key(prompt)
-
+    
     risk_reasons = []
     risk_score = 0
 
@@ -99,6 +111,9 @@ def analyze_prompt(data: dict):
     else:
         risk_level = "CRITICAL"
 
+        action = determine_action(risk_score)
+
+
     return {
         "prompt": prompt,
         "word_count": word_count,
@@ -114,5 +129,6 @@ def analyze_prompt(data: dict):
         "tokens_saved": tokens_saved,
         "risk_level": risk_level,
         "risk_score": risk_score,
+        "action": action,
         "risk_reasons": risk_reasons
     }
