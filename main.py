@@ -36,6 +36,10 @@ def detect_password(prompt):
     password_detected = re.search(r"password", prompt, re.IGNORECASE)
     return password_detected
 
+def detect_prompt_injection(prompt):
+    prompt_injection_detected = re.search(r"Ignore previous instructions", prompt, re.IGNORECASE)
+    return prompt_injection_detected
+
 def determine_action(risk_score):
     if risk_score <= 20:
         action = "ALLOW"
@@ -80,6 +84,7 @@ def analyze_prompt(data: dict):
     credit_card_detected = detect_credit_card(prompt)
     api_key_detected = detect_api_key(prompt)
     password_detected = detect_password(prompt)
+    prompt_injection_detected = detect_prompt_injection(prompt)
     
     risk_reasons = []
     risk_score = 0
@@ -107,6 +112,10 @@ def analyze_prompt(data: dict):
     if api_key_detected:
         risk_score = risk_score + 100
         risk_reasons.append("API Key detected")
+
+    if prompt_injection_detected:
+       risk_score = risk_score + 100
+       risk_reasons.append("Prompt injection detected")
 
     
 
