@@ -28,6 +28,10 @@ def detect_credit_card(prompt):
     credit_card_detected = re.search(r"\d{4}(-| )?\d{4}(-| )?\d{4}(-| )?\d{4}", prompt)
     return credit_card_detected
 
+def detect_api_key(prompt):
+    api_key_detected = re.search(r"sk-", prompt)
+    return api_key_detected
+
 
 @app.post("/analyze")
 def analyze_prompt(data: dict):
@@ -58,6 +62,7 @@ def analyze_prompt(data: dict):
     ssn_detected = detect_ssn(prompt)
     phone_detected = detect_phone(prompt)
     credit_card_detected = detect_credit_card(prompt)
+    api_key_detected = detect_api_key(prompt)
 
     risk_reasons = []
     risk_score = 0
@@ -77,6 +82,10 @@ def analyze_prompt(data: dict):
     if credit_card_detected:
         risk_score = risk_score + 50
         risk_reasons.append("Credit card detected")
+
+    if api_key_detected:
+        risk_score = risk_score + 100
+        risk_reasons.append("API Key detected")
 
     if risk_score <= 20:
         risk_level = "LOW"

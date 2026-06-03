@@ -206,10 +206,6 @@ http://127.0.0.1:8000/docs
 Completed:
 
 * Added Email Detection
-* Added reusable regex pattern supporting:
-  - Hyphen separated credit cards
-  - Space separated credit cards
-  - Continuous 16-digit credit cards
 * Added SSN Detection
 * Added Phone Detection
 * Added Credit Card Detection
