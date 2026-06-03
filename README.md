@@ -220,6 +220,13 @@ Completed:
 * Added Token Savings Estimation
 * Added GitHub Version Control
 
+# Latest Progress (Version 1.3)
+
+* Added API Key Detection
+* Added CRITICAL risk scoring for exposed API keys
+* Added reusable detect_api_key() helper function
+* Added API key detection to risk scoring engine
+
 ---
 
 # Lessons Learned
