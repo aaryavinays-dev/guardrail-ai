@@ -3,6 +3,16 @@ import re
 
 app = FastAPI()
 
+risk_weights = {
+    "email": 20,
+    "phone": 20,
+    "ssn": 50,
+    "credit_card": 50,
+    "password": 100,
+    "api_key": 100,
+    "prompt_injection": 100
+}
+
 
 @app.get("/")
 def home():
@@ -100,31 +110,31 @@ def analyze_prompt(data: dict):
     risk_score = 0
 
     if email_detected:
-        risk_score = risk_score + 20
+        risk_score += risk_weights["email"]
         risk_reasons.append("Email detected")
 
     if ssn_detected:
-        risk_score = risk_score + 50
+        risk_score += risk_weights["ssn"]
         risk_reasons.append("SSN detected")
 
     if phone_detected:
-        risk_score = risk_score + 20
+        risk_score += risk_weights["phone"]
         risk_reasons.append("Phone number detected")
 
     if credit_card_detected:
-        risk_score = risk_score + 50
+        risk_score += risk_weights["credit_card"]
         risk_reasons.append("Credit card detected")
 
     if password_detected:
-        risk_score = risk_score + 100
+        risk_score += risk_weights["password"]
         risk_reasons.append("Password detected")
 
     if api_key_detected:
-        risk_score = risk_score + 100
+        risk_score += risk_weights["api_key"]
         risk_reasons.append("API Key detected")
 
     if prompt_injection_detected:
-       risk_score = risk_score + 100
+       risk_score += risk_weights["prompt_injection"]
        risk_reasons.append("Prompt injection detected")
 
     
