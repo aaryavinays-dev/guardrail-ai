@@ -1,25 +1,22 @@
-GuardRail AI Architecture v1
-
 User Prompt
-    ↓
-FastAPI API
-    ↓
-Prompt Analysis Engine
-    ↓
-PII Detection Engine
-    ├── Email Detection
-    ├── Phone Detection
-    ├── SSN Detection
-    ├── Credit Card Detection
-    └── API Key Detection
-    ↓
-Risk Scoring Engine
-↓
-Risk Classification
-↓
-Decision Engine
-├── ALLOW
-├── WARN
-└── BLOCK
-↓
-JSON Response
+      │
+      ▼
+ FastAPI Gateway
+      │
+      ▼
+ Prompt Analysis Layer
+├─ PII Detection
+├─ Prompt Injection Detection
+└─ Prompt Optimization
+      │
+      ▼
+ Risk Scoring Engine
+      │
+      ▼
+ Decision Engine
+ ├─ ALLOW
+ ├─ WARN
+ └─ BLOCK
+      │
+      ▼
+ GuardRail Response

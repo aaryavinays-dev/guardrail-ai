@@ -23,3 +23,14 @@ Prompt Injection: 100
 
 Final Risk Score: 220
 Action: BLOCK
+
+
+## Version 2.0 robustness enhancement 
+Concept Learned:
+Error Handling
+try
+except
+KeyError
+
+Future Enhancement:
+Add KeyError handling to risk scoring engine
