@@ -34,3 +34,23 @@ KeyError
 
 Future Enhancement:
 Add KeyError handling to risk scoring engine
+
+## Version 2.0 - Audit Logging
+
+Features:
+- Added local audit logging using file handling
+- Saved prompt, risk score, risk level, action, risk reasons, and timestamp
+- Used append mode to preserve historical audit records
+
+Concepts Learned:
+- File Handling
+- open()
+- write()
+- append mode
+- audit trails
+- timestamps
+- persistence
+
+Validation:
+- Tested master prompt with email, password, and prompt injection
+- Confirmed audit_log.txt stores the full request history

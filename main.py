@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import re
+from datetime import datetime
 
 app = FastAPI()
 
@@ -72,6 +73,19 @@ def determine_action(risk_score):
 
     return action
 
+def save_audit_log(prompt, risk_score, risk_level, action, risk_reasons):
+    timestamp = datetime.now()
+
+    with open("audit_log.txt", "a") as file:
+        file.write("--------------------------------------------------\n")
+        file.write(f"Timestamp: {timestamp}\n")
+        file.write(f"Prompt: {prompt}\n")
+        file.write(f"Risk Score: {risk_score}\n")
+        file.write(f"Risk Level: {risk_level}\n")
+        file.write(f"Action: {action}\n")
+        file.write(f"Risk Reasons: {risk_reasons}\n")
+        file.write("--------------------------------------------------\n\n")
+
 
 @app.post("/analyze")
 def analyze_prompt(data: dict):
@@ -105,6 +119,7 @@ def analyze_prompt(data: dict):
     api_key_detected = detect_api_key(prompt)
     password_detected = detect_password(prompt)
     prompt_injection_detected = detect_prompt_injection(prompt)
+    
     
     risk_reasons = []
     risk_score = 0
@@ -153,6 +168,7 @@ def analyze_prompt(data: dict):
 
     
     action = determine_action(risk_score)
+    save_audit_log(prompt, risk_score, risk_level, action, risk_reasons)
 
 
     return {
