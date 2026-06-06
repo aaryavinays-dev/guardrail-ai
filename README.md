@@ -1,64 +1,126 @@
 # GuardRail AI
 
-GuardRail AI is an AI governance and prompt analysis platform designed to reduce token costs, detect sensitive information, and enforce enterprise AI usage policies before prompts reach external LLM providers.
+## Enterprise AI Governance & Prompt Security Gateway
+
+GuardRail AI is an enterprise-focused AI governance platform designed to inspect, secure, optimize, and control prompts before they reach external AI providers such as OpenAI GPT, Claude, Gemini, Copilot, and open-source LLMs.
+
+The goal is to help organizations reduce AI costs, prevent sensitive data exposure, enforce governance policies, and improve AI usage visibility through centralized prompt inspection and risk analysis.
 
 ---
 
-# Problem
+# Problem Statement
 
-Organizations are rapidly adopting AI tools such as GPT, Claude, Copilot, LLama Family and Gemini.
+Organizations are rapidly adopting Generative AI across departments.
 
-Many prompts contain:
+However, prompts frequently contain:
 
-* Sensitive information (PII)
+* Personally Identifiable Information (PII)
+* Sensitive business information
+* Passwords and credentials
+* API keys and secrets
+* Prompt injection attempts
 * Unnecessary prompt fluff
-* Repeated wording
-* Email signatures
-* Excessive context
+* Repeated context and redundant text
 
-This increases:
+These issues create:
 
-* AI spending
-* Security risk
-* Compliance risk
-* Data leakage risk
+* Increased AI spending
+* Security vulnerabilities
+* Compliance risks
+* Data leakage concerns
+* Poor AI governance
 
-GuardRail AI aims to detect and prevent these issues before prompts are sent to AI models.
+Most organizations currently send prompts directly to AI providers without any inspection layer.
+
+GuardRail AI aims to solve this problem by acting as a protective gateway between users and AI systems.
 
 ---
 
 # Current MVP
 
-The current MVP accepts a prompt, analyzes its content, detects sensitive information, calculates risk scores, performs basic prompt optimization, and estimates token savings.
+The current MVP accepts prompts through a FastAPI endpoint, analyzes content, detects sensitive information, calculates risk scores, determines actions, and maintains audit logs for future review.
 
 ---
 
-# Current Features
+# Current Architecture
+
+User Prompt
+
+↓
+
+FastAPI API
+
+↓
+
+Detection Engine
+
+* Email Detection
+* Phone Detection
+* SSN Detection
+* Credit Card Detection
+* Password Detection
+* API Key Detection
+* Prompt Injection Detection
+
+↓
+
+Risk Scoring Engine
+
+↓
+
+Risk Classification Engine
+
+* LOW
+* MEDIUM
+* HIGH
+* CRITICAL
+
+↓
+
+Decision Engine
+
+* ALLOW
+* WARN
+* BLOCK
+
+↓
+
+Audit Logging System
+
+* audit_log.txt
+
+---
+
+# Features
 
 ## Prompt Analytics
 
-* Word count calculation
-* Character count calculation
-* Character count without spaces
-* Uppercase transformation
-* Lowercase transformation
-* Reverse prompt transformation
-* No-space prompt transformation
+* Word Count
+* Character Count
+* Character Count Without Spaces
+* Uppercase Transformation
+* Lowercase Transformation
+* Reverse Prompt Transformation
+* No-Space Prompt Transformation
+
+---
 
 ## Prompt Optimization
 
-Removes common prompt fluff phrases:
+GuardRail AI removes common prompt fluff including:
 
 * Best regards
 * Sincerely
 * Thank you
 * Please kindly
 
-Calculates:
+Outputs:
 
-* Estimated tokens
-* Optimized tokens
-* Tokens saved
+* Estimated Tokens
+* Optimized Tokens
+* Tokens Saved
+
+---
 
 ## Sensitive Data Detection
 
@@ -68,11 +130,15 @@ Example:
 
 [test@gmail.com](mailto:test@gmail.com)
 
-### Phone Detection
+---
+
+### Phone Number Detection
 
 Example:
 
 734-555-1234
+
+---
 
 ### SSN Detection
 
@@ -80,24 +146,66 @@ Example:
 
 123-45-6789
 
+---
+
 ### Credit Card Detection
+
+Supported Formats:
+
+* 4111-1111-1111-1111
+* 4111 1111 1111 1111
+* 4111111111111111
+
+---
+
+### Password Detection
+
+Detects password-related information inside prompts.
 
 Example:
 
-4111-1111-1111-1111
+Password: hello123
 
-## Risk Scoring Engine
+---
 
-### Risk Weights
+### API Key Detection
 
-| Detection   | Score |
-| ----------- | ----- |
-| Email       | 20    |
-| Phone       | 20    |
-| SSN         | 50    |
-| Credit Card | 50    |
+Detects exposed API keys.
 
-### Risk Levels
+Example:
+
+sk-xxxxxxxxxxxxxxxx
+
+---
+
+### Prompt Injection Detection
+
+Detects common prompt injection attempts including:
+
+* Ignore previous instructions
+* Reveal system prompt
+* Bypass policy
+* Forget your rules
+
+---
+
+# Risk Scoring Engine
+
+## Risk Weights
+
+| Detection        | Score |
+| ---------------- | ----- |
+| Email            | 20    |
+| Phone            | 20    |
+| SSN              | 50    |
+| Credit Card      | 50    |
+| Password         | 100   |
+| API Key          | 100   |
+| Prompt Injection | 100   |
+
+---
+
+## Risk Levels
 
 | Score | Risk Level |
 | ----- | ---------- |
@@ -108,31 +216,80 @@ Example:
 
 ---
 
-# Software Engineering Improvements
+# Decision Engine
 
-Version 1.2 introduced reusable helper functions and enhanced regex detection capabilities:
+Based on the calculated risk score:
 
-* detect_email()
-* detect_ssn()
-* detect_phone()
-* detect_credit_card()
+| Risk Score | Action |
+| ---------- | ------ |
+| 0-20       | ALLOW  |
+| 21-99      | WARN   |
+| 100+       | BLOCK  |
 
-Benefits:
+This decision engine simulates enterprise policy enforcement before requests reach external AI systems.
 
-* Cleaner code
-* Better readability
-* Easier testing
-* Easier maintenance
-* Improved scalability
+---
+
+# Audit Logging System
+
+Version 2.0 introduces persistent audit logging.
+
+Every analyzed prompt stores:
+
+* Timestamp
+* Original Prompt
+* Risk Score
+* Risk Level
+* Action Taken
+* Risk Reasons
+
+Example Log Entry:
+
+Timestamp:
+2026-06-07 10:30:00
+
+Prompt:
+[test@gmail.com](mailto:test@gmail.com) Password: hello123
+
+Risk Score:
+120
+
+Risk Level:
+CRITICAL
+
+Action:
+BLOCK
+
+Risk Reasons:
+Password detected
+
+---
+
+This provides:
+
+* Auditability
+* Traceability
+* Governance visibility
+* Security monitoring
 
 ---
 
 # Tech Stack
 
+## Backend
+
 * Python
 * FastAPI
 * Uvicorn
-* Regex
+
+## Security
+
+* Regex Pattern Detection
+* Prompt Injection Detection
+* Risk Scoring Engine
+
+## Development
+
 * Git
 * GitHub
 
@@ -170,6 +327,7 @@ Example Response:
 {
   "risk_level": "HIGH",
   "risk_score": 70,
+  "action": "WARN",
   "risk_reasons": [
     "Email detected",
     "SSN detected"
@@ -181,19 +339,19 @@ Example Response:
 
 # How To Run Locally
 
-Install dependencies:
+Install Dependencies
 
 ```bash
 pip install fastapi uvicorn
 ```
 
-Run application:
+Run Application
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Open Swagger Documentation:
+Open Swagger UI
 
 ```text
 http://127.0.0.1:8000/docs
@@ -201,95 +359,136 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# Latest Progress (Version 1.2)
+# Version History
 
-Completed:
+## v1.0
 
-* Added Email Detection
-* Added SSN Detection
-* Added Phone Detection
-* Added Credit Card Detection
-* Added support for multiple credit card formats
-  - 4111-1111-1111-1111
-  - 4111 1111 1111 1111
-  - 4111111111111111
-* Added Weighted Risk Scoring
-* Added LOW / MEDIUM / HIGH / CRITICAL Risk Levels
+* Initial FastAPI MVP
+* Prompt Analytics
+* Token Estimation
+
+## v1.1
+
 * Refactored detection logic into reusable helper functions
-* Added Prompt Optimization
-* Added Token Savings Estimation
-* Added GitHub Version Control
 
-# Latest Progress (Version 1.3)
+## v1.2
 
-* Added API Key Detection
-* Added CRITICAL risk scoring for exposed API keys
-* Added reusable detect_api_key() helper function
-* Added API key detection to risk scoring engine
+* Credit Card Detection
+* Enhanced Regex Detection
 
----
-
-# Lessons Learned
-
-## Python Fundamentals
-
-* Functions must be called to execute
-* Parameters receive data
-* Arguments provide data
-* return sends data back to the caller
-* Python evaluates the right side of assignments first
-* Regex OR operator (|)
-* Regex optional operator (?)
-* Built a reusable regex for multiple credit card formats
-
-## Software Engineering
-
-* Functions should have one responsibility
-* Refactoring improves maintainability
-* Helper functions improve readability
-* Reusable code is better than duplicated code
-
----
-
-# Roadmap
-
-
-## Future Features
+## v1.3
 
 * API Key Detection
+
+## v1.4
+
+* Decision Engine
+* ALLOW / WARN / BLOCK Actions
+
+## v1.5
+
 * Password Detection
-* Bank Account Detection
-* Address Detection
-* Advanced PII Detection
-* Configurable Risk Rules
-* Prompt Quality Scoring
-* Prompt Improvement Suggestions
-* Request Logging
-* Audit Logging
-* Prompt History
-* PostgreSQL Integration
-* User Authentication
-* OpenAI Integration
-* Multi-Model Routing (GPT, Claude, Gemini)
-* Analytics Dashboard
-* Enterprise Policy Engine
-* RAG Knowledge Base Integration
-* Document Upload and Analysis
-* AI Agents for Risk Investigation
-* Department-Level Budget Tracking
-* Cloud Deployment
-* Public Demo
+
+## v1.6
+
+* Prompt Injection Detection
+
+## v1.7
+
+* Enhanced Prompt Injection Detection
+
+## v1.8
+
+* Centralized Risk Weight Dictionary
+
+## v2.0
+
+* Audit Logging System
+* Timestamp Tracking
+* Persistent Prompt History
 
 ---
 
-# Project Goal
+# Concepts Implemented
 
-The long-term goal is to build an enterprise AI governance gateway that:
+## Python
 
+* Functions
+* Dictionaries
+* Sets
+* Lists
+* Loops
+* Conditional Logic
+* Error Handling
+* File Handling
+* Regex
+
+## Backend Engineering
+
+* REST APIs
+* FastAPI
+* API Endpoints
+* Request Processing
+* Risk Scoring Systems
+* Audit Logging
+
+## Security Engineering
+
+* PII Detection
+* Sensitive Data Identification
+* Prompt Injection Detection
+* Policy Enforcement
+* AI Governance Concepts
+
+---
+
+# Future Roadmap
+
+## Phase 2
+
+* PostgreSQL Integration
+* SQLAlchemy ORM
+* Structured Audit Database
+* Configurable Risk Policies
+
+## Phase 3
+
+* User Authentication
+* Role Based Access Control
+* Admin Dashboard
+* Analytics Dashboard
+
+## Phase 4
+
+* OpenAI Integration
+* Claude Integration
+* Gemini Integration
+* Multi-Model Routing
+
+## Phase 5
+
+* RAG Knowledge Base
+* Document Analysis
+* Compliance Engine
+* Enterprise Policy Management
+
+## Phase 6
+
+* Workflow Agents
+* Human-in-the-Loop Reviews
+* Cloud Deployment
+* Enterprise AI Governance Platform
+
+---
+
+# Long-Term Vision
+
+GuardRail AI aims to become an enterprise AI gateway that:
+
+* Prevents sensitive data leakage
 * Reduces AI token waste
-* Detects sensitive information
-* Enforces enterprise AI policies
+* Enforces governance policies
 * Tracks AI usage and costs
-* Prevents data leakage
-* Routes requests to appropriate AI models
-* Provides governance, compliance, and observability for enterprise AI systems
+* Maintains audit trails
+* Routes requests across multiple AI providers
+* Provides security, compliance, and observability for enterprise AI systems

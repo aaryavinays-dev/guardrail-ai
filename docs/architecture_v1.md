@@ -1,22 +1,28 @@
+Current Architecture
+
 User Prompt
-      │
-      ▼
- FastAPI Gateway
-      │
-      ▼
- Prompt Analysis Layer
-├─ PII Detection
-├─ Prompt Injection Detection
-└─ Prompt Optimization
-      │
-      ▼
- Risk Scoring Engine
-      │
-      ▼
- Decision Engine
- ├─ ALLOW
- ├─ WARN
- └─ BLOCK
-      │
-      ▼
- GuardRail Response
+      |
+      v
+FastAPI API
+      |
+      v
+Detection Engine
+      |
+      +--> Email Detection
+      +--> SSN Detection
+      +--> Phone Detection
+      +--> Credit Card Detection
+      +--> Password Detection
+      +--> API Key Detection
+      +--> Prompt Injection Detection
+      |
+      v
+Risk Scoring Engine
+      |
+      v
+Decision Engine
+(ALLOW / WARN / BLOCK)
+      |
+      v
+Audit Logging System
+(audit_log.txt)
