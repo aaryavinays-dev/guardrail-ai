@@ -4,7 +4,7 @@
 
 GuardRail AI is an enterprise-focused AI governance platform designed to inspect, secure, optimize, and control prompts before they reach external AI providers such as OpenAI GPT, Claude, Gemini, Copilot, and open-source LLMs.
 
-The goal is to help organizations reduce AI costs, prevent sensitive data exposure, enforce governance policies, and improve AI usage visibility through centralized prompt inspection and risk analysis.
+The platform acts as a governance layer between users and AI systems, helping organizations reduce AI costs, prevent sensitive data exposure, enforce security policies, and improve visibility into AI usage.
 
 ---
 
@@ -12,7 +12,7 @@ The goal is to help organizations reduce AI costs, prevent sensitive data exposu
 
 Organizations are rapidly adopting Generative AI across departments.
 
-However, prompts frequently contain:
+However, prompts often contain:
 
 * Personally Identifiable Information (PII)
 * Sensitive business information
@@ -28,66 +28,92 @@ These issues create:
 * Security vulnerabilities
 * Compliance risks
 * Data leakage concerns
-* Poor AI governance
+* Poor governance and visibility
 
-Most organizations currently send prompts directly to AI providers without any inspection layer.
+Most organizations currently send prompts directly to AI providers without any inspection or security layer.
 
-GuardRail AI aims to solve this problem by acting as a protective gateway between users and AI systems.
+GuardRail AI aims to solve this problem by acting as a protective gateway that analyzes, scores, and governs prompts before they reach external AI systems.
 
 ---
 
-# Current MVP
+# Current System Capabilities
 
-The current MVP accepts prompts through a FastAPI endpoint, analyzes content, detects sensitive information, calculates risk scores, determines actions, and maintains audit logs for future review.
+The current system accepts prompts through a FastAPI API, performs prompt analysis and risk detection, calculates security scores, applies governance decisions, and stores audit records for traceability.
+
+---
+
+# Current System Metrics
+
+| Metric             | Value                       |
+| ------------------ | --------------------------- |
+| Current Version    | v2.1                        |
+| Detection Modules  | 7                           |
+| Risk Levels        | 4                           |
+| Decision Actions   | 3                           |
+| API Endpoints      | 2                           |
+| Audit Logging      | Enabled                     |
+| Architecture Style | Modular FastAPI Application |
 
 ---
 
 # Current Architecture
 
+```text
 User Prompt
+    ↓
+FastAPI API Layer (main.py)
+    ↓
+Detection Engine (detectors.py)
+    ├── Email Detection
+    ├── Phone Detection
+    ├── SSN Detection
+    ├── Credit Card Detection
+    ├── Password Detection
+    ├── API Key Detection
+    └── Prompt Injection Detection
+    ↓
+Risk Scoring Engine (scoring.py)
+    ├── Risk Weight Dictionary
+    ├── Risk Classification
+    └── Decision Engine
+    ↓
+Audit Logging Engine (audit_logger.py)
+    └── audit_log.txt
+    ↓
+API Response
+```
 
-↓
+---
 
-FastAPI API
+# Project Structure
 
-↓
-
-Detection Engine
-
-* Email Detection
-* Phone Detection
-* SSN Detection
-* Credit Card Detection
-* Password Detection
-* API Key Detection
-* Prompt Injection Detection
-
-↓
-
-Risk Scoring Engine
-
-↓
-
-Risk Classification Engine
-
-* LOW
-* MEDIUM
-* HIGH
-* CRITICAL
-
-↓
-
-Decision Engine
-
-* ALLOW
-* WARN
-* BLOCK
-
-↓
-
-Audit Logging System
-
-* audit_log.txt
+```text
+guardrail-ai/
+│
+├── main.py
+├── detectors.py
+├── scoring.py
+├── audit_logger.py
+├── README.md
+├── audit_log.txt
+│
+├── docs/
+│   ├── architecture_v1.md
+│   └── changelog.md
+│
+└── screenshots/
+    ├── v1.0_mvp/
+    ├── v1.1_refactor/
+    ├── v1.2_credit_card/
+    ├── v1.3_api_key/
+    ├── v1.4_decision_engine/
+    ├── v1.5_password_detection/
+    ├── v1.6_prompt_injection/
+    ├── v1.7_prompt_injection_v2/
+    ├── v1.8_risk_weight_dictionary/
+    ├── v2.0_audit_logging/
+    └── v2.1_project_refactor/
+```
 
 ---
 
@@ -107,7 +133,7 @@ Audit Logging System
 
 ## Prompt Optimization
 
-GuardRail AI removes common prompt fluff including:
+GuardRail AI removes common prompt fluff, including:
 
 * Best regards
 * Sincerely
@@ -128,64 +154,62 @@ Outputs:
 
 Example:
 
-[test@gmail.com](mailto:test@gmail.com)
+```text
+test@gmail.com
+```
 
----
-
-### Phone Number Detection
+### Phone Detection
 
 Example:
 
+```text
 734-555-1234
-
----
+```
 
 ### SSN Detection
 
 Example:
 
+```text
 123-45-6789
-
----
+```
 
 ### Credit Card Detection
 
 Supported Formats:
 
-* 4111-1111-1111-1111
-* 4111 1111 1111 1111
-* 4111111111111111
-
----
+```text
+4111-1111-1111-1111
+4111 1111 1111 1111
+4111111111111111
+```
 
 ### Password Detection
 
-Detects password-related information inside prompts.
-
 Example:
 
+```text
 Password: hello123
-
----
+```
 
 ### API Key Detection
 
-Detects exposed API keys.
-
 Example:
 
+```text
 sk-xxxxxxxxxxxxxxxx
-
----
+```
 
 ### Prompt Injection Detection
 
-Detects common prompt injection attempts including:
+Detects patterns such as:
 
-* Ignore previous instructions
-* Reveal system prompt
-* Bypass policy
-* Forget your rules
+```text
+Ignore previous instructions
+Reveal system prompt
+Bypass policy
+Forget your rules
+```
 
 ---
 
@@ -218,7 +242,7 @@ Detects common prompt injection attempts including:
 
 # Decision Engine
 
-Based on the calculated risk score:
+Based on calculated risk score:
 
 | Risk Score | Action |
 | ---------- | ------ |
@@ -226,15 +250,13 @@ Based on the calculated risk score:
 | 21-99      | WARN   |
 | 100+       | BLOCK  |
 
-This decision engine simulates enterprise policy enforcement before requests reach external AI systems.
+The decision engine simulates enterprise governance policies before prompts are sent to external AI systems.
 
 ---
 
 # Audit Logging System
 
-Version 2.0 introduces persistent audit logging.
-
-Every analyzed prompt stores:
+Every analyzed prompt generates an audit record containing:
 
 * Timestamp
 * Original Prompt
@@ -243,13 +265,13 @@ Every analyzed prompt stores:
 * Action Taken
 * Risk Reasons
 
-Example Log Entry:
+Example:
 
-Timestamp:
-2026-06-07 10:30:00
+```text
+Timestamp: 2026-06-07 10:30:00
 
 Prompt:
-[test@gmail.com](mailto:test@gmail.com) Password: hello123
+test@gmail.com Password: hello123
 
 Risk Score:
 120
@@ -262,15 +284,27 @@ BLOCK
 
 Risk Reasons:
 Password detected
+```
 
----
-
-This provides:
+Benefits:
 
 * Auditability
 * Traceability
-* Governance visibility
-* Security monitoring
+* Governance Visibility
+* Security Monitoring
+
+---
+
+# Core Engineering Concepts Demonstrated
+
+* Modular Application Architecture
+* Separation of Concerns
+* Single Responsibility Principle
+* Risk-Based Decision Systems
+* Pattern Matching with Regular Expressions
+* Audit Logging and Traceability
+* REST API Design
+* Secure Prompt Inspection
 
 ---
 
@@ -284,7 +318,7 @@ This provides:
 
 ## Security
 
-* Regex Pattern Detection
+* Regular Expressions (Regex)
 * Prompt Injection Detection
 * Risk Scoring Engine
 
@@ -337,21 +371,21 @@ Example Response:
 
 ---
 
-# How To Run Locally
+# Running Locally
 
-Install Dependencies
+Install Dependencies:
 
 ```bash
 pip install fastapi uvicorn
 ```
 
-Run Application
+Run Application:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Open Swagger UI
+Open Swagger UI:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -407,54 +441,47 @@ http://127.0.0.1:8000/docs
 * Timestamp Tracking
 * Persistent Prompt History
 
+## v2.1
+
+* Modular Architecture Refactor
+* Added detectors.py
+* Added scoring.py
+* Added audit_logger.py
+* Simplified main.py responsibilities
+* Introduced separation of concerns
+
 ---
 
-# Concepts Implemented
+# Lessons Learned
 
-## Python
+Version 2.1 introduced the first major architectural refactor.
 
-* Functions
-* Dictionaries
-* Sets
-* Lists
-* Loops
-* Conditional Logic
-* Error Handling
-* File Handling
-* Regex
+Key concepts implemented:
 
-## Backend Engineering
-
-* REST APIs
-* FastAPI
-* API Endpoints
-* Request Processing
-* Risk Scoring Systems
-* Audit Logging
-
-## Security Engineering
-
-* PII Detection
-* Sensitive Data Identification
-* Prompt Injection Detection
-* Policy Enforcement
-* AI Governance Concepts
+* Python Modules
+* Cross-File Imports
+* Separation of Concerns
+* Refactoring Without Breaking Existing Functionality
+* Backend Code Organization
+* Single Responsibility Principle
+* Audit Logging Architecture
 
 ---
 
 # Future Roadmap
 
-## Phase 2
+## Phase 2 (Current Next Milestone)
 
 * PostgreSQL Integration
 * SQLAlchemy ORM
 * Structured Audit Database
-* Configurable Risk Policies
+* Database CRUD Operations
+* Queryable Audit History
 
 ## Phase 3
 
 * User Authentication
-* Role Based Access Control
+* Role-Based Access Control (RBAC)
 * Admin Dashboard
 * Analytics Dashboard
 
