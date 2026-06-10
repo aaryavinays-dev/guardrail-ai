@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from audit_logger import save_audit_log
 from models import PromptRequest, RiskResponse
+import json
+import os
 from detectors import (
     detect_email,
     detect_ssn,
@@ -115,3 +117,43 @@ def analyze_prompt(request: PromptRequest):
         action=action,
         risk_reasons=risk_reasons,
     )
+@app.get("/audit-summary")
+def audit_summary():
+    audit_log_file = "logs/audit_log.json"
+
+    if not os.path.exists(audit_log_file):
+        return {"message": "No audit logs found"}
+
+    with open(audit_log_file, "r") as file:
+        audit_logs = json.load(file)
+
+    risk_scores = [
+        log["risk_score"]
+        for log in audit_logs
+    ]
+
+    high_risk_logs = [
+        log
+        for log in audit_logs
+        if log["risk_score"] >= 50
+    ]
+
+    critical_logs = [
+        log
+        for log in audit_logs
+        if log["risk_level"] == "CRITICAL"
+    ]
+
+    risk_levels = [
+        log["risk_level"]
+        for log in audit_logs
+    ]
+
+    return {
+        "total_logs": len(audit_logs),
+        "risk_scores": risk_scores,
+        "risk_levels": risk_levels,
+        "high_risk_count": len(high_risk_logs),
+        "critical_count": len(critical_logs),
+        "high_risk_logs": high_risk_logs
+    }
