@@ -1,3 +1,12 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+print("APP_VERSION =", os.getenv("APP_VERSION"))
+
+APP_NAME = os.getenv("APP_NAME", "GuardRail AI")
+APP_VERSION = os.getenv("APP_VERSION", "1.0")
+RISK_THRESHOLD = int(os.getenv("RISK_THRESHOLD", 50))
 from fastapi import FastAPI
 from audit_logger import save_audit_log
 from models import PromptRequest, RiskResponse
@@ -20,7 +29,10 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"message": "GuardRail AI is running"}
+    return {
+        "message": f"{APP_NAME} is running",
+        "version": APP_VERSION
+    }
 
 
 @app.post("/analyze", response_model=RiskResponse)
@@ -119,7 +131,7 @@ def analyze_prompt(request: PromptRequest):
     )
 @app.get("/audit-summary")
 def audit_summary():
-    audit_log_file = "logs/audit_log.json"
+    audit_log_file = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")
 
     if not os.path.exists(audit_log_file):
         return {"message": "No audit logs found"}
