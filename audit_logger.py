@@ -3,27 +3,31 @@ import json
 import os
 
 
-def save_audit_log(prompt, risk_score, risk_level, action, risk_reasons):
-    timestamp = datetime.now()
+class AuditLogger:
+    def __init__(self, audit_log_file):
+        self.audit_log_file = audit_log_file
 
-    audit_record = {
-        "timestamp": str(timestamp),
-        "prompt": prompt,
-        "risk_score": risk_score,
-        "risk_level": risk_level,
-        "action": action,
-        "risk_reasons": risk_reasons
-    }
+    def load_logs(self):
+        if os.path.exists(self.audit_log_file):
+            with open(self.audit_log_file, "r") as file:
+                return json.load(file)
+        else:
+            return []
 
-    audit_log_file = "logs/audit_log.json"
+    def save(self, prompt, risk_score, risk_level, action, risk_reasons):
+        timestamp = datetime.now()
 
-    if os.path.exists(audit_log_file):
-        with open(audit_log_file, "r") as file:
-            audit_logs = json.load(file)
-    else:
-        audit_logs = []
+        audit_record = {
+            "timestamp": str(timestamp),
+            "prompt": prompt,
+            "risk_score": risk_score,
+            "risk_level": risk_level,
+            "action": action,
+            "risk_reasons": risk_reasons
+        }
 
-    audit_logs.append(audit_record)
+        audit_logs = self.load_logs()
+        audit_logs.append(audit_record)
 
-    with open(audit_log_file, "w") as file:
-        json.dump(audit_logs, file, indent=4)
+        with open(self.audit_log_file, "w") as file:
+            json.dump(audit_logs, file, indent=4)

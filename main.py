@@ -1,30 +1,29 @@
 from dotenv import load_dotenv
 import os
+import json
+
+from fastapi import FastAPI
+
+from audit_logger import AuditLogger
+from risk_scorer import RiskScorer
+from prompt_analyzer import PromptAnalyzer
+from models import PromptRequest, RiskResponse
+from scoring import risk_weights, determine_action
+
 
 load_dotenv()
-print("APP_VERSION =", os.getenv("APP_VERSION"))
 
 APP_NAME = os.getenv("APP_NAME", "GuardRail AI")
 APP_VERSION = os.getenv("APP_VERSION", "1.0")
 RISK_THRESHOLD = int(os.getenv("RISK_THRESHOLD", 50))
-from fastapi import FastAPI
-from audit_logger import save_audit_log
-from models import PromptRequest, RiskResponse
-import json
-import os
-from detectors import (
-    detect_email,
-    detect_ssn,
-    detect_phone,
-    detect_credit_card,
-    detect_api_key,
-    detect_password,
-    detect_prompt_injection,
-)
-from scoring import risk_weights, determine_action
+AUDIT_LOG_FILE = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")
 
 
 app = FastAPI()
+
+audit_logger = AuditLogger(AUDIT_LOG_FILE)
+risk_scorer = RiskScorer(risk_weights, RISK_THRESHOLD)
+prompt_analyzer = PromptAnalyzer()
 
 
 @app.get("/")
@@ -59,44 +58,8 @@ def analyze_prompt(request: PromptRequest):
     optimized_tokens = int(len(optimized_prompt.split()) * 1.3)
     tokens_saved = estimated_tokens - optimized_tokens
 
-    email_detected = detect_email(prompt)
-    ssn_detected = detect_ssn(prompt)
-    phone_detected = detect_phone(prompt)
-    credit_card_detected = detect_credit_card(prompt)
-    api_key_detected = detect_api_key(prompt)
-    password_detected = detect_password(prompt)
-    prompt_injection_detected = detect_prompt_injection(prompt)
-
-    risk_reasons = []
-    risk_score = 0
-
-    if email_detected:
-        risk_score += risk_weights["email"]
-        risk_reasons.append("Email detected")
-
-    if ssn_detected:
-        risk_score += risk_weights["ssn"]
-        risk_reasons.append("SSN detected")
-
-    if phone_detected:
-        risk_score += risk_weights["phone"]
-        risk_reasons.append("Phone number detected")
-
-    if credit_card_detected:
-        risk_score += risk_weights["credit_card"]
-        risk_reasons.append("Credit card detected")
-
-    if password_detected:
-        risk_score += risk_weights["password"]
-        risk_reasons.append("Password detected")
-
-    if api_key_detected:
-        risk_score += risk_weights["api_key"]
-        risk_reasons.append("API Key detected")
-
-    if prompt_injection_detected:
-        risk_score += risk_weights["prompt_injection"]
-        risk_reasons.append("Prompt injection detected")
+    detections = prompt_analyzer.analyze(prompt)
+    risk_score, risk_reasons = risk_scorer.calculate_score(detections)
 
     if risk_score <= 20:
         risk_level = "LOW"
@@ -109,7 +72,7 @@ def analyze_prompt(request: PromptRequest):
 
     action = determine_action(risk_score)
 
-    save_audit_log(prompt, risk_score, risk_level, action, risk_reasons)
+    audit_logger.save(prompt, risk_score, risk_level, action, risk_reasons)
 
     return RiskResponse(
         prompt=prompt,
@@ -129,6 +92,8 @@ def analyze_prompt(request: PromptRequest):
         action=action,
         risk_reasons=risk_reasons,
     )
+
+
 @app.get("/audit-summary")
 def audit_summary():
     audit_log_file = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")

@@ -167,6 +167,28 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 - Added filtering logic for high-risk and critical audit records.
 - Added audit analytics response for reporting use cases.
 
+## Version 2.5 - Environment Variables & Configuration Management
+
+### Added
+- Added `.env` configuration support.
+- Added `.env.example` template file.
+- Added `python-dotenv` dependency.
+- Added configurable application metadata using environment variables.
+- Added configurable audit log file path.
+- Added configurable risk threshold.
+
+### Improved
+- Removed hardcoded configuration values from source code.
+- Separated configuration from business logic.
+- Improved production readiness and deployment flexibility.
+
+### Learning Outcomes
+- Environment Variables
+- Configuration Management
+- `os.getenv()`
+- Type Conversion from Environment Variables
+- Production Configuration Patterns
+
 ### Improved
 - Expanded GuardRail AI from operational prompt analysis to basic audit reporting.
 - Created foundation for future dashboard and PostgreSQL-backed analytics.
@@ -184,6 +206,25 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 - Lists containing dictionaries
 - Structured logging architecture
 - File persistence concepts
+
+v2.6 – OOP Refactor
+
+Implemented object-oriented architecture.
+
+Added PromptAnalyzer class
+- Centralized prompt detection logic
+
+Added RiskScorer class
+- Centralized risk scoring logic
+
+Refactored AuditLogger
+- Converted logging functionality into class methods
+
+Benefits:
+- Better separation of responsibilities
+- Cleaner main.py
+- Improved maintainability
+- Easier future expansion
 
 ### Outcome
 GuardRail AI now maintains structured persistent audit logs in JSON format, enabling future analytics, reporting, and dashboard capabilities.
