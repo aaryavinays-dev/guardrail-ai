@@ -15,7 +15,11 @@ load_dotenv()
 
 APP_NAME = os.getenv("APP_NAME", "GuardRail AI")
 APP_VERSION = os.getenv("APP_VERSION", "1.0")
-RISK_THRESHOLD = int(os.getenv("RISK_THRESHOLD", 50))
+try:
+    RISK_THRESHOLD = int(os.getenv("RISK_THRESHOLD", 50))
+except (TypeError, ValueError):
+    RISK_THRESHOLD = 50
+    
 AUDIT_LOG_FILE = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")
 
 
@@ -96,13 +100,8 @@ def analyze_prompt(request: PromptRequest):
 
 @app.get("/audit-summary")
 def audit_summary():
-    audit_log_file = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")
 
-    if not os.path.exists(audit_log_file):
-        return {"message": "No audit logs found"}
-
-    with open(audit_log_file, "r") as file:
-        audit_logs = json.load(file)
+    audit_logs = audit_logger.load_logs()
 
     risk_scores = [
         log["risk_score"]

@@ -226,5 +226,19 @@ Benefits:
 - Improved maintainability
 - Easier future expansion
 
+
+## Version 2.7 - Exception Handling and Logging
+
+### Added
+- Added exception handling for corrupted JSON audit logs.
+- Added safe fallback behavior when audit logs cannot be loaded.
+- Added logging for audit log JSON decoding failures.
+- Added fallback handling for invalid `RISK_THRESHOLD` environment variable values.
+- Validated audit summary endpoint after implementing exception handling and logging improvements.
+
+### Improved
+- Reused `AuditLogger.load_logs()` inside `/audit-summary` to avoid duplicate file-reading logic.
+- Improved backend resilience by preventing corrupted audit logs from crashing the API.
+
 ### Outcome
 GuardRail AI now maintains structured persistent audit logs in JSON format, enabling future analytics, reporting, and dashboard capabilities.
