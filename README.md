@@ -295,6 +295,55 @@ Benefits:
 
 ---
 
+## Pydantic Validation Layer
+
+Implemented Pydantic models to validate incoming API requests and outgoing API responses.
+
+### Added Models
+
+- `PromptRequest`
+  - Validates that incoming requests contain a `prompt` field.
+  - Ensures `prompt` is treated as a string before business logic runs.
+
+- `RiskResponse`
+  - Defines the structure of the `/analyze` API response.
+  - Ensures the response contains risk score, risk level, action, optimization metrics, and risk reasons.
+
+### Why This Matters
+
+This adds a validation layer before the GuardRail AI risk engine runs. Invalid or incomplete requests are rejected automatically by FastAPI/Pydantic, preventing bad data from entering the detection and scoring pipeline.
+
+- Structured JSON Audit Logging
+- Persistent Audit History Tracking
+
+- Audit summary endpoint for reporting and analytics
+- List comprehension-based risk score extraction
+- High-risk and critical audit log filtering
+
+### GET /audit-summary
+
+Returns audit analytics from stored JSON audit logs.
+
+Example response:
+
+```json
+{
+  "total_logs": 2,
+  "risk_scores": [50, 0],
+  "risk_levels": ["MEDIUM", "LOW"],
+  "high_risk_count": 1,
+  "critical_count": 0,
+  "high_risk_logs": []
+}
+
+### Configuration Management
+
+- Environment variable support using python-dotenv
+- Externalized application configuration
+- Configurable audit log file path
+- Configurable risk threshold
+- Production-ready configuration pattern
+
 # Core Engineering Concepts Demonstrated
 
 * Modular Application Architecture
@@ -305,9 +354,21 @@ Benefits:
 * Audit Logging and Traceability
 * REST API Design
 * Secure Prompt Inspection
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+APP_NAME=GuardRail AI
+APP_VERSION=2.5
+RISK_THRESHOLD=50
+AUDIT_LOG_FILE=logs/audit_log.json
 
 ---
 
+- Exception handling for corrupted audit logs and invalid environment configuration
+- Logging for audit file failures
+Implemented exception handling and logging to improve backend reliability, error recovery, and operational visibility.
 # Tech Stack
 
 ## Backend

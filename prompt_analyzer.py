@@ -10,7 +10,7 @@ from detectors import (
 
 
 class PromptAnalyzer:
-    def analyze(self, prompt):
+    def analyze(self, prompt: str) -> dict:
         detections = {
             "email": detect_email(prompt),
             "ssn": detect_ssn(prompt),

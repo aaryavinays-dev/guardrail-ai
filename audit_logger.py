@@ -8,11 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class AuditLogger:
-    def __init__(self, audit_log_file):
+    def __init__(self, audit_log_file: str):
         self.audit_log_file = audit_log_file
 
-    def load_logs(self):
-        print("LOAD_LOGS CALLED")
+    def load_logs(self) -> list:
         if not os.path.exists(self.audit_log_file):
             return []
 
@@ -21,12 +20,17 @@ class AuditLogger:
                 return json.load(file)
 
         except json.JSONDecodeError:
-               print("JSON FILE IS CORRUPTED")
                logger.error("Audit log JSON file is corrupted")
                return []
                
 
-    def save(self, prompt, risk_score, risk_level, action, risk_reasons):
+    def save(
+            self, 
+            prompt: str, 
+            risk_score: int, 
+            risk_level: str, 
+            action: str, 
+            risk_reasons: list):
         timestamp = datetime.now()
 
         audit_record = {
@@ -44,6 +48,7 @@ class AuditLogger:
         try:
             with open(self.audit_log_file, "w") as file:
                 json.dump(audit_logs, file, indent=4)
+                logger.info("Audit log saved successfully")
         except OSError:
             logger.error("Failed to write audit log")
             return {

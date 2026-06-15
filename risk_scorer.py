@@ -1,9 +1,9 @@
 class RiskScorer:
-    def __init__(self, risk_weights, risk_threshold):
+    def __init__(self, risk_weights: dict, risk_threshold: int):
         self.risk_weights = risk_weights
         self.risk_threshold = risk_threshold
 
-    def calculate_score(self, detections):
+    def calculate_score(self, detections: dict) -> tuple:
         risk_score = 0
         risk_reasons = []
 
@@ -14,7 +14,7 @@ class RiskScorer:
 
         return risk_score, risk_reasons
 
-    def determine_risk_level(self, risk_score):
+    def determine_risk_level(self, risk_score: int) -> str:
         if risk_score <= 20:
             return "LOW"
         elif risk_score <= 50:
