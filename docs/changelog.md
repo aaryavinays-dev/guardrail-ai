@@ -232,6 +232,9 @@ Benefits:
 ### Added
 - Added exception handling for corrupted JSON audit logs.
 - Added safe fallback behavior when audit logs cannot be loaded.
+- Added exception handling for corrupted audit log files.
+- Added exception handling for invalid environment variable values.
+- Added backend logging for audit log operations and failures.
 - Added logging for audit log JSON decoding failures.
 - Added fallback handling for invalid `RISK_THRESHOLD` environment variable values.
 - Validated audit summary endpoint after implementing exception handling and logging improvements.
@@ -239,6 +242,17 @@ Benefits:
 ### Improved
 - Reused `AuditLogger.load_logs()` inside `/audit-summary` to avoid duplicate file-reading logic.
 - Improved backend resilience by preventing corrupted audit logs from crashing the API.
+
+## Version 2.9 - Unit Testing with Pytest
+
+### Added
+- Added pytest framework for automated backend testing.
+- Added unit tests for RiskScorer score calculation.
+- Added unit tests for RiskScorer risk level determination.
+
+### Improved
+- Reduced reliance on manual testing through automated test execution.
+- Improved confidence in backend scoring logic.
 
 ### Outcome
 GuardRail AI now maintains structured persistent audit logs in JSON format, enabling future analytics, reporting, and dashboard capabilities.
