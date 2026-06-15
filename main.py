@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 from typing import Any
+from redactor import redact_prompt
 
 from fastapi import FastAPI
 
@@ -61,9 +62,9 @@ def analyze_prompt(request: PromptRequest) -> RiskResponse:
     risk_level = risk_scorer.determine_risk_level(risk_score)
     action = risk_scorer.determine_action(risk_score)
 
-    redacted_prompt = audit_logger.redact_prompt(prompt)
+    redacted_prompt = redact_prompt(prompt)
 
-    audit_logger.save(prompt, risk_score, risk_level, action, risk_reasons)
+    audit_logger.save(prompt, risk_score, risk_level.value, action.value, risk_reasons)
 
     return RiskResponse(
         redacted_prompt=redacted_prompt,
@@ -71,9 +72,9 @@ def analyze_prompt(request: PromptRequest) -> RiskResponse:
         word_count=word_count,
         character_count=character_count,
         estimated_tokens=estimated_tokens,
-        risk_level=risk_level,
+        risk_level=risk_level.value,
         risk_score=risk_score,
-        action=action,
+        action=action.value,
         risk_reasons=risk_reasons,
     )
 

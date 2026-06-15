@@ -138,8 +138,10 @@ guardrail-ai/
 │   └── changelog.md
 │
 ├── tests/
-│   ├── test_risk_scorer.py
-│   └── test_audit_logger.py
+    |__test_detectors.py
+│   ├── test_prompt_analyzer.py
+│   └── test_redactor.py
+    |__test_risk_scorer.py
 │
 ├── screenshots/
 │   ├── v1.7_prompt_injection_v2/
@@ -155,6 +157,7 @@ guardrail-ai/
 │   ├── v2.8_logging and type hints/
 │   ├── v2.9_pytest_tests_passed/
 │   └── v3.0_secure_response_redaction/
+    |__ v3.1_python_polish/
 │
 └── logs/
     └── audit_log.json
@@ -436,10 +439,21 @@ Current test coverage includes:
 * Action decision logic
 * Prompt redaction validation
 
+| Metric              |           Value |
+| ------------------- | --------------: |
+| Detection Modules   |               7 |
+| Risk Levels         |               4 |
+| Decision Actions    |               3 |
+| API Endpoints       |               3 |
+| Test Cases          |              37 |
+| Audit Logging       |      JSON-based |
+| Current Storage     | Local JSON file |
+| Next Storage Target |      PostgreSQL |
+
 Expected result:
 
 ```text
-9 passed
+37 passed
 ```
 
 ---
@@ -492,6 +506,13 @@ Expected result:
 * Prompt redaction
 * Unit testing with pytest
 * Risk-based decision systems
+* Python Enums for fixed business values
+* Pure function extraction
+* Parametrized testing with `pytest.mark.parametrize`
+* Detector-level test coverage
+* Coordinator class testing through `PromptAnalyzer`
+* Circular import debugging
+
 
 ---
 
@@ -562,6 +583,14 @@ Expected result:
 * Added prompt redaction for API responses and audit logs.
 * Removed raw prompt exposure from `/analyze`.
 * Added redaction test coverage.
+
+### v3.1 - Python Polish and Expanded Test Coverage
+
+- Extracted redaction logic into `redactor.py`.
+- Added `RiskLevel` and `Action` enums.
+- Added detector tests using `pytest.mark.parametrize`.
+- Added PromptAnalyzer tests.
+- Expanded pytest coverage from 9 tests to 37 passing tests.
 
 ---
 

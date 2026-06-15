@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from enums import Action, RiskLevel
 from risk_scorer import RiskScorer
 from scoring import risk_weights
 

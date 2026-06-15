@@ -1,3 +1,6 @@
+from enums import Action, RiskLevel
+
+
 class RiskScorer:
     def __init__(self, risk_weights: dict[str, int], risk_threshold: int) -> None:
         self.risk_weights = risk_weights
@@ -15,20 +18,20 @@ class RiskScorer:
 
         return risk_score, risk_reasons
 
-    def determine_risk_level(self, risk_score: int) -> str:
+    def determine_risk_level(self, risk_score: int) -> RiskLevel:
         if risk_score <= 20:
-            return "LOW"
+            return RiskLevel.LOW
         elif risk_score <= 50:
-            return "MEDIUM"
+            return RiskLevel.MEDIUM
         elif risk_score < self.risk_threshold:
-            return "HIGH"
+            return RiskLevel.HIGH
         else:
-            return "CRITICAL"
+            return RiskLevel.CRITICAL
 
-    def determine_action(self, risk_score: int) -> str:
+    def determine_action(self, risk_score: int) -> Action:
         if risk_score <= 20:
-            return "ALLOW"
+            return Action.ALLOW
         elif risk_score < self.risk_threshold:
-            return "WARN"
+            return Action.WARN
         else:
-            return "BLOCK"
+            return Action.BLOCK

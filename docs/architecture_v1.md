@@ -36,6 +36,11 @@ scoring.py
 audit_logger.py
 └── stores JSON-formatted audit records in the configured audit log file
 ```
+redactor.py
+└── redacts sensitive values before API response and audit persistence
+
+enums.py
+└── defines controlled values for RiskLevel and Action
 
 ---
 
