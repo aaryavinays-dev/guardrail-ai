@@ -380,3 +380,51 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 
 ### Outcome
 GuardRail AI now performs safer prompt analysis by detecting sensitive data, redacting sensitive values from responses and audit logs, and maintaining automated test coverage for scoring and redaction logic.
+
+## Version 3.1 - Python Polish, Enums, and Expanded Test Coverage
+
+### Added
+
+* Added `redactor.py` to separate prompt redaction logic from audit logging.
+* Added `enums.py` with `RiskLevel` and `Action` enums.
+* Added detector unit tests using `pytest.mark.parametrize`.
+* Added PromptAnalyzer tests to validate combined detection output.
+* Added dedicated redactor tests for sensitive value masking.
+
+### Improved
+
+* Moved redaction logic out of `AuditLogger` to follow the Single Responsibility Principle.
+* Updated `RiskScorer` to return controlled enum values instead of raw strings.
+* Improved test coverage for email, SSN, phone, credit card, password, API key, and prompt injection detection.
+* Improved confidence in the backend before PostgreSQL integration.
+
+### Concepts Practiced
+
+* Python Enums
+* `str, Enum`
+* Pure functions
+* Module extraction
+* Parametrized testing
+* Dictionary assertions
+* `set()`
+* `all()`
+* Circular import debugging
+* Separation of production code and test code
+
+### Validation
+
+* Ran full pytest suite successfully.
+* Verified detector tests pass.
+* Verified redactor tests pass.
+* Verified PromptAnalyzer tests pass.
+* Verified RiskScorer enum tests pass.
+
+### Test Result
+
+```text
+37 passed
+```
+
+### Outcome
+
+GuardRail AI now has cleaner Python architecture, safer controlled business values through enums, and expanded automated test coverage across detectors, redaction, scoring, and prompt analysis.
