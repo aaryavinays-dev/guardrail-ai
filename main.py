@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-import json
+from typing import Any
 
 from fastapi import FastAPI
 
@@ -8,22 +8,31 @@ from audit_logger import AuditLogger
 from risk_scorer import RiskScorer
 from prompt_analyzer import PromptAnalyzer
 from models import PromptRequest, RiskResponse
-from scoring import risk_weights, determine_action
+from scoring import risk_weights
 
 
 load_dotenv()
 
+
 APP_NAME = os.getenv("APP_NAME", "GuardRail AI")
 APP_VERSION = os.getenv("APP_VERSION", "1.0")
-try:
-    RISK_THRESHOLD = int(os.getenv("RISK_THRESHOLD", 50))
-except (TypeError, ValueError):
-    RISK_THRESHOLD = 50
-    
 AUDIT_LOG_FILE = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")
 
 
-app = FastAPI()
+def get_risk_threshold() -> int:
+    try:
+        return int(os.getenv("RISK_THRESHOLD", "100"))
+    except ValueError:
+        return 100
+
+
+RISK_THRESHOLD = get_risk_threshold()
+
+
+app = FastAPI(
+    title=APP_NAME,
+    version=APP_VERSION,
+)
 
 audit_logger = AuditLogger(AUDIT_LOG_FILE)
 risk_scorer = RiskScorer(risk_weights, RISK_THRESHOLD)
@@ -31,66 +40,37 @@ prompt_analyzer = PromptAnalyzer()
 
 
 @app.get("/")
-def home():
+def home() -> dict[str, str]:
     return {
         "message": f"{APP_NAME} is running",
-        "version": APP_VERSION
+        "version": APP_VERSION,
     }
 
 
 @app.post("/analyze", response_model=RiskResponse)
-def analyze_prompt(request: PromptRequest):
+def analyze_prompt(request: PromptRequest) -> RiskResponse:
     prompt = request.prompt
 
     word_count = len(prompt.split())
     character_count = len(prompt)
-
-    uppercase_prompt = prompt.upper()
-    lowercase_prompt = prompt.lower()
-    reversed_prompt = prompt[::-1]
-    no_space_prompt = prompt.replace(" ", "")
-    character_without_spaces = len(no_space_prompt)
-
     estimated_tokens = int(word_count * 1.3)
-
-    optimized_prompt = prompt.replace("Best regards", "")
-    optimized_prompt = optimized_prompt.replace("Please kindly", "")
-    optimized_prompt = optimized_prompt.replace("thank you", "")
-    optimized_prompt = optimized_prompt.replace("Sincerely", "")
-    optimized_prompt = optimized_prompt.strip()
-
-    optimized_tokens = int(len(optimized_prompt.split()) * 1.3)
-    tokens_saved = estimated_tokens - optimized_tokens
 
     detections = prompt_analyzer.analyze(prompt)
     risk_score, risk_reasons = risk_scorer.calculate_score(detections)
 
-    if risk_score <= 20:
-        risk_level = "LOW"
-    elif risk_score <= 50:
-        risk_level = "MEDIUM"
-    elif risk_score <= 99:
-        risk_level = "HIGH"
-    else:
-        risk_level = "CRITICAL"
+    risk_level = risk_scorer.determine_risk_level(risk_score)
+    action = risk_scorer.determine_action(risk_score)
 
-    action = determine_action(risk_score)
+    redacted_prompt = audit_logger.redact_prompt(prompt)
 
     audit_logger.save(prompt, risk_score, risk_level, action, risk_reasons)
 
     return RiskResponse(
-        prompt=prompt,
+        redacted_prompt=redacted_prompt,
+        detections=detections,
         word_count=word_count,
         character_count=character_count,
-        uppercase_prompt=uppercase_prompt,
-        lowercase_prompt=lowercase_prompt,
-        no_space_prompt=no_space_prompt,
-        character_without_spaces=character_without_spaces,
-        reversed_prompt=reversed_prompt,
-        optimized_prompt=optimized_prompt,
         estimated_tokens=estimated_tokens,
-        optimized_tokens=optimized_tokens,
-        tokens_saved=tokens_saved,
         risk_level=risk_level,
         risk_score=risk_score,
         action=action,
@@ -99,30 +79,29 @@ def analyze_prompt(request: PromptRequest):
 
 
 @app.get("/audit-summary")
-def audit_summary():
-
+def audit_summary() -> dict[str, Any]:
     audit_logs = audit_logger.load_logs()
 
     risk_scores = [
-        log["risk_score"]
+        log.get("risk_score", 0)
+        for log in audit_logs
+    ]
+
+    risk_levels = [
+        log.get("risk_level", "UNKNOWN")
         for log in audit_logs
     ]
 
     high_risk_logs = [
         log
         for log in audit_logs
-        if log["risk_score"] >= 50
+        if log.get("risk_score", 0) >= 50
     ]
 
     critical_logs = [
         log
         for log in audit_logs
-        if log["risk_level"] == "CRITICAL"
-    ]
-
-    risk_levels = [
-        log["risk_level"]
-        for log in audit_logs
+        if log.get("risk_level") == "CRITICAL"
     ]
 
     return {
@@ -131,5 +110,5 @@ def audit_summary():
         "risk_levels": risk_levels,
         "high_risk_count": len(high_risk_logs),
         "critical_count": len(critical_logs),
-        "high_risk_logs": high_risk_logs
+        "high_risk_logs": high_risk_logs,
     }

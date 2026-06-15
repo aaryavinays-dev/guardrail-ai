@@ -1,25 +1,21 @@
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
 
 
 class PromptRequest(BaseModel):
-    prompt: str
+    prompt: str = Field(
+        ...,
+        min_length=1,
+        description="User prompt to analyze for sensitive data and prompt injection risk.",
+    )
 
 
 class RiskResponse(BaseModel):
-    prompt: str
+    redacted_prompt: str
+    detections: dict[str, bool]
     word_count: int
     character_count: int
-    uppercase_prompt: str
-    lowercase_prompt: str
-    no_space_prompt: str
-    character_without_spaces: int
-    reversed_prompt: str
-    optimized_prompt: str
     estimated_tokens: int
-    optimized_tokens: int
-    tokens_saved: int
     risk_level: str
     risk_score: int
     action: str
-    risk_reasons: List[str]
+    risk_reasons: list[str]

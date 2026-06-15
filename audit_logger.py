@@ -1,58 +1,119 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
 import os
+import re
+from typing import Any
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class AuditLogger:
-    def __init__(self, audit_log_file: str):
+    def __init__(self, audit_log_file: str) -> None:
         self.audit_log_file = audit_log_file
 
-    def load_logs(self) -> list:
+    def _ensure_log_directory_exists(self) -> None:
+        log_directory = os.path.dirname(self.audit_log_file)
+
+        if log_directory:
+            os.makedirs(log_directory, exist_ok=True)
+
+    def redact_prompt(self, prompt: str) -> str:
+        redacted_prompt = prompt
+
+        redacted_prompt = re.sub(
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
+            "[REDACTED_EMAIL]",
+            redacted_prompt,
+        )
+
+        redacted_prompt = re.sub(
+            r"\b\d{3}-\d{2}-\d{4}\b",
+            "[REDACTED_SSN]",
+            redacted_prompt,
+        )
+
+        redacted_prompt = re.sub(
+            r"\b(?:\d{4}[- ]?){3}\d{4}\b",
+            "[REDACTED_CREDIT_CARD]",
+            redacted_prompt,
+        )
+
+        redacted_prompt = re.sub(
+            r"\b(?:\+1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b",
+            "[REDACTED_PHONE]",
+            redacted_prompt,
+        )
+
+        redacted_prompt = re.sub(
+            r"\bsk-[A-Za-z0-9_-]{10,}\b",
+            "[REDACTED_API_KEY]",
+            redacted_prompt,
+        )
+
+        redacted_prompt = re.sub(
+            r"\b(password|pwd|passcode)\s*[:=]\s*\S+",
+            r"\1: [REDACTED_PASSWORD]",
+            redacted_prompt,
+            flags=re.IGNORECASE,
+        )
+
+        return redacted_prompt
+
+    def load_logs(self) -> list[dict[str, Any]]:
         if not os.path.exists(self.audit_log_file):
             return []
 
         try:
-            with open(self.audit_log_file, "r") as file:
-                return json.load(file)
+            with open(self.audit_log_file, "r", encoding="utf-8") as file:
+                audit_logs = json.load(file)
+
+                if isinstance(audit_logs, list):
+                    return audit_logs
+
+                logger.error("Audit log file does not contain a valid list")
+                return []
 
         except json.JSONDecodeError:
-               logger.error("Audit log JSON file is corrupted")
-               return []
-               
+            logger.error("Audit log JSON file is corrupted")
+            return []
+
+        except OSError as error:
+            logger.error("Failed to read audit log file: %s", error)
+            return []
 
     def save(
-            self, 
-            prompt: str, 
-            risk_score: int, 
-            risk_level: str, 
-            action: str, 
-            risk_reasons: list):
-        timestamp = datetime.now()
+        self,
+        prompt: str,
+        risk_score: int,
+        risk_level: str,
+        action: str,
+        risk_reasons: list[str],
+    ) -> None:
+        self._ensure_log_directory_exists()
+
+        redacted_prompt = self.redact_prompt(prompt)
 
         audit_record = {
-            "timestamp": str(timestamp),
-            "prompt": prompt,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "prompt": redacted_prompt,
+            "prompt_redacted": True,
             "risk_score": risk_score,
             "risk_level": risk_level,
             "action": action,
-            "risk_reasons": risk_reasons
+            "risk_reasons": risk_reasons,
         }
 
         audit_logs = self.load_logs()
         audit_logs.append(audit_record)
 
         try:
-            with open(self.audit_log_file, "w") as file:
+            with open(self.audit_log_file, "w", encoding="utf-8") as file:
                 json.dump(audit_logs, file, indent=4)
-                logger.info("Audit log saved successfully")
-        except OSError:
-            logger.error("Failed to write audit log")
-            return {
-                "error": "Failed to write audit log"
-            }
 
-    
+            logger.info("Audit log saved successfully")
+
+        except OSError as error:
+            logger.error("Failed to write audit log file: %s", error)

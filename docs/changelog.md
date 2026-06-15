@@ -358,6 +358,25 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 * Assertions
 * Automated backend validation
 
-### Outcome
+## Version 3.0 - Secure Response Redaction
 
-GuardRail AI now has automated unit tests for backend scoring logic, improving reliability before moving into PostgreSQL persistence.
+### Added
+- Added prompt redaction for sensitive values before storing audit logs.
+- Added redacted API response field using `redacted_prompt`.
+- Added detection visibility using the `detections` response object.
+- Added unit test coverage for audit log redaction.
+
+### Improved
+- Removed raw prompt exposure from `/analyze` response.
+- Removed beginner string-practice response fields from production API output.
+- Improved security hygiene by preventing sensitive values from being returned or persisted in raw form.
+- Improved audit log safety before PostgreSQL integration.
+
+### Validation
+- Verified `/analyze` returns redacted sensitive values.
+- Verified audit logs store redacted prompts.
+- Verified email, SSN, phone, password, API key, and prompt injection detection.
+- Verified pytest passes with 9 tests.
+
+### Outcome
+GuardRail AI now performs safer prompt analysis by detecting sensitive data, redacting sensitive values from responses and audit logs, and maintaining automated test coverage for scoring and redaction logic.

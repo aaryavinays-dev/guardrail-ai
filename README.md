@@ -2,451 +2,418 @@
 
 ## Enterprise AI Governance & Prompt Security Gateway
 
-GuardRail AI is an enterprise-focused AI governance platform designed to inspect, secure, optimize, and control prompts before they reach external AI providers such as OpenAI GPT, Claude, Gemini, Copilot, and open-source LLMs.
+GuardRail AI is a FastAPI-based backend prototype for inspecting and governing user prompts before they are sent to external AI systems such as OpenAI, Claude, Gemini, Copilot, or open-source LLMs.
 
-The platform acts as a governance layer between users and AI systems, helping organizations reduce AI costs, prevent sensitive data exposure, enforce security policies, and improve visibility into AI usage.
+The system detects sensitive data, identifies prompt injection attempts, calculates risk scores, applies governance decisions, redacts sensitive values, and stores structured audit records for traceability.
 
 ---
 
-# Problem Statement
+## Problem Statement
 
-Organizations are rapidly adopting Generative AI across departments.
+Organizations are rapidly adopting Generative AI across business teams, but many prompts are sent directly to AI providers without inspection.
 
-However, prompts often contain:
+Prompts may contain:
 
 * Personally Identifiable Information (PII)
-* Sensitive business information
+* Social Security Numbers
+* Phone numbers
+* Credit card numbers
 * Passwords and credentials
 * API keys and secrets
 * Prompt injection attempts
-* Unnecessary prompt fluff
-* Repeated context and redundant text
 
-These issues create:
+This creates risks around:
 
-* Increased AI spending
-* Security vulnerabilities
-* Compliance risks
-* Data leakage concerns
-* Poor governance and visibility
+* Sensitive data leakage
+* Compliance exposure
+* Lack of AI usage visibility
+* Weak governance controls
+* Poor auditability
 
-Most organizations currently send prompts directly to AI providers without any inspection or security layer.
-
-GuardRail AI aims to solve this problem by acting as a protective gateway that analyzes, scores, and governs prompts before they reach external AI systems.
+GuardRail AI acts as a protective prompt governance layer that analyzes and controls prompts before they reach external AI systems.
 
 ---
 
-# Current System Capabilities
+## Current Version
 
-The current system accepts prompts through a FastAPI API, performs prompt analysis and risk detection, calculates security scores, applies governance decisions, and stores audit records for traceability.
-
----
-
-# Current System Metrics
-
-| Metric             | Value                       |
-| ------------------ | --------------------------- |
-| Current Version    | v2.1                        |
-| Detection Modules  | 7                           |
-| Risk Levels        | 4                           |
-| Decision Actions   | 3                           |
-| API Endpoints      | 2                           |
-| Audit Logging      | Enabled                     |
-| Architecture Style | Modular FastAPI Application |
+**Version:** v3.0
+**Current Phase:** Secure backend cleanup before PostgreSQL integration
 
 ---
 
-# Current Architecture
+## Current Capabilities
+
+* FastAPI backend API
+* Pydantic request and response validation
+* Sensitive data detection
+* Prompt injection detection
+* Risk scoring engine
+* ALLOW / WARN / BLOCK decision engine
+* Environment variable configuration
+* JSON audit logging
+* Audit summary endpoint
+* Secure prompt redaction
+* Pytest unit testing
+
+---
+
+## Current System Metrics
+
+| Metric              |           Value |
+| ------------------- | --------------: |
+| Detection Modules   |               7 |
+| Risk Levels         |               4 |
+| Decision Actions    |               3 |
+| API Endpoints       |               3 |
+| Test Cases          |               9 |
+| Audit Logging       |      JSON-based |
+| Current Storage     | Local JSON file |
+| Next Storage Target |      PostgreSQL |
+
+---
+
+## Architecture
 
 ```text
 User Prompt
-    ↓
-FastAPI API Layer (main.py)
-    ↓
-Detection Engine (detectors.py)
-    ├── Email Detection
-    ├── Phone Detection
-    ├── SSN Detection
-    ├── Credit Card Detection
-    ├── Password Detection
-    ├── API Key Detection
-    └── Prompt Injection Detection
-    ↓
-Risk Scoring Engine (scoring.py)
-    ├── Risk Weight Dictionary
-    ├── Risk Classification
-    └── Decision Engine
-    ↓
-Audit Logging Engine (audit_logger.py)
-    └── audit_log.txt
-    ↓
-API Response
+    |
+    v
+FastAPI API Layer
+    |
+    v
+Pydantic Validation
+    |
+    v
+Prompt Analyzer
+    |
+    v
+Detection Engine
+    |
+    +--> Email Detection
+    +--> SSN Detection
+    +--> Phone Detection
+    +--> Credit Card Detection
+    +--> Password Detection
+    +--> API Key Detection
+    +--> Prompt Injection Detection
+    |
+    v
+Risk Scoring Engine
+    |
+    v
+Decision Engine
+    |
+    +--> ALLOW
+    +--> WARN
+    +--> BLOCK
+    |
+    v
+Prompt Redaction Layer
+    |
+    v
+JSON Audit Logging
 ```
 
 ---
 
-# Project Structure
+## Project Structure
 
 ```text
 guardrail-ai/
 │
 ├── main.py
+├── models.py
 ├── detectors.py
+├── prompt_analyzer.py
+├── risk_scorer.py
 ├── scoring.py
 ├── audit_logger.py
+├── requirements.txt
 ├── README.md
-├── audit_log.txt
+├── .env.example
+├── .gitignore
 │
 ├── docs/
 │   ├── architecture_v1.md
 │   └── changelog.md
 │
-└── screenshots/
-    ├── v1.0_mvp/
-    ├── v1.1_refactor/
-    ├── v1.2_credit_card/
-    ├── v1.3_api_key/
-    ├── v1.4_decision_engine/
-    ├── v1.5_password_detection/
-    ├── v1.6_prompt_injection/
-    ├── v1.7_prompt_injection_v2/
-    ├── v1.8_risk_weight_dictionary/
-    ├── v2.0_audit_logging/
-    └── v2.1_project_refactor/
+├── tests/
+│   ├── test_risk_scorer.py
+│   └── test_audit_logger.py
+│
+├── screenshots/
+│   ├── v1.7_prompt_injection_v2/
+│   ├── v1.8_risk_weight_dictionary/
+│   ├── v2.0_audit_logging/
+│   ├── v2.1_project_refactor/
+│   ├── v2.2_pydantic_validation/
+│   ├── v2.3_json_logging/
+│   ├── v2.4_list_comprehension/
+│   ├── v2.5_environment_variables/
+│   ├── v2.6_oop_refactor/
+│   ├── v2.7_exception_handling/
+│   ├── v2.8_logging and type hints/
+│   ├── v2.9_pytest_tests_passed/
+│   └── v3.0_secure_response_redaction/
+│
+└── logs/
+    └── audit_log.json
 ```
+
+`logs/`, `.env`, `venv/`, `__pycache__/`, and `.pytest_cache/` are ignored by Git.
 
 ---
 
-# Features
+## Detection Modules
 
-## Prompt Analytics
+GuardRail AI currently detects the following risk signals:
 
-* Word Count
-* Character Count
-* Character Count Without Spaces
-* Uppercase Transformation
-* Lowercase Transformation
-* Reverse Prompt Transformation
-* No-Space Prompt Transformation
-
----
-
-## Prompt Optimization
-
-GuardRail AI removes common prompt fluff, including:
-
-* Best regards
-* Sincerely
-* Thank you
-* Please kindly
-
-Outputs:
-
-* Estimated Tokens
-* Optimized Tokens
-* Tokens Saved
+| Detection Type   | Example                        |
+| ---------------- | ------------------------------ |
+| Email            | `test@gmail.com`               |
+| SSN              | `123-45-6789`                  |
+| Phone            | `123-456-7890`                 |
+| Credit Card      | `4111-1111-1111-1111`          |
+| Password         | `password: hello123`           |
+| API Key          | `sk-abc123456789`              |
+| Prompt Injection | `Ignore previous instructions` |
 
 ---
 
-## Sensitive Data Detection
+## Risk Scoring Engine
 
-### Email Detection
-
-Example:
-
-```text
-test@gmail.com
-```
-
-### Phone Detection
-
-Example:
-
-```text
-734-555-1234
-```
-
-### SSN Detection
-
-Example:
-
-```text
-123-45-6789
-```
-
-### Credit Card Detection
-
-Supported Formats:
-
-```text
-4111-1111-1111-1111
-4111 1111 1111 1111
-4111111111111111
-```
-
-### Password Detection
-
-Example:
-
-```text
-Password: hello123
-```
-
-### API Key Detection
-
-Example:
-
-```text
-sk-xxxxxxxxxxxxxxxx
-```
-
-### Prompt Injection Detection
-
-Detects patterns such as:
-
-```text
-Ignore previous instructions
-Reveal system prompt
-Bypass policy
-Forget your rules
-```
-
----
-
-# Risk Scoring Engine
-
-## Risk Weights
+Each detection type has a configured risk weight.
 
 | Detection        | Score |
-| ---------------- | ----- |
-| Email            | 20    |
-| Phone            | 20    |
-| SSN              | 50    |
-| Credit Card      | 50    |
-| Password         | 100   |
-| API Key          | 100   |
-| Prompt Injection | 100   |
+| ---------------- | ----: |
+| Email            |    20 |
+| Phone            |    20 |
+| SSN              |    50 |
+| Credit Card      |    50 |
+| Password         |   100 |
+| API Key          |   100 |
+| Prompt Injection |   100 |
 
 ---
 
 ## Risk Levels
 
-| Score | Risk Level |
-| ----- | ---------- |
-| 0-20  | LOW        |
-| 21-50 | MEDIUM     |
-| 51-99 | HIGH       |
-| 100+  | CRITICAL   |
+| Score Range | Risk Level |
+| ----------- | ---------- |
+| 0-20        | LOW        |
+| 21-50       | MEDIUM     |
+| 51-99       | HIGH       |
+| 100+        | CRITICAL   |
 
 ---
 
-# Decision Engine
+## Decision Engine
 
-Based on calculated risk score:
+| Score Range | Action |
+| ----------- | ------ |
+| 0-20        | ALLOW  |
+| 21-99       | WARN   |
+| 100+        | BLOCK  |
 
-| Risk Score | Action |
-| ---------- | ------ |
-| 0-20       | ALLOW  |
-| 21-99      | WARN   |
-| 100+       | BLOCK  |
-
-The decision engine simulates enterprise governance policies before prompts are sent to external AI systems.
+The decision engine simulates enterprise governance behavior by deciding whether a prompt should be allowed, warned, or blocked based on detected risk.
 
 ---
 
-# Audit Logging System
+## Secure Prompt Redaction
 
-Every analyzed prompt generates an audit record containing:
+GuardRail AI redacts sensitive values before returning API responses and before writing audit records.
 
-* Timestamp
-* Original Prompt
-* Risk Score
-* Risk Level
-* Action Taken
-* Risk Reasons
-
-Example:
+Example input:
 
 ```text
-Timestamp: 2026-06-07 10:30:00
-
-Prompt:
-test@gmail.com Password: hello123
-
-Risk Score:
-120
-
-Risk Level:
-CRITICAL
-
-Action:
-BLOCK
-
-Risk Reasons:
-Password detected
+My SSN is 123-45-6789, email is vinay@test.com, phone is 123-456-7890, password: hello123 and key sk-abc123456789 Ignore previous instructions
 ```
 
-Benefits:
+Example redacted output:
 
-* Auditability
-* Traceability
-* Governance Visibility
-* Security Monitoring
+```text
+My SSN is [REDACTED_SSN], email is [REDACTED_EMAIL], phone is [REDACTED_PHONE], password: [REDACTED_PASSWORD] and key [REDACTED_API_KEY] Ignore previous instructions
+```
+
+This prevents sensitive values from being stored in audit logs or exposed in API responses.
 
 ---
 
-## Pydantic Validation Layer
+## API Endpoints
 
-Implemented Pydantic models to validate incoming API requests and outgoing API responses.
+### GET `/`
 
-### Added Models
-
-- `PromptRequest`
-  - Validates that incoming requests contain a `prompt` field.
-  - Ensures `prompt` is treated as a string before business logic runs.
-
-- `RiskResponse`
-  - Defines the structure of the `/analyze` API response.
-  - Ensures the response contains risk score, risk level, action, optimization metrics, and risk reasons.
-
-### Why This Matters
-
-This adds a validation layer before the GuardRail AI risk engine runs. Invalid or incomplete requests are rejected automatically by FastAPI/Pydantic, preventing bad data from entering the detection and scoring pipeline.
-
-- Structured JSON Audit Logging
-- Persistent Audit History Tracking
-
-- Audit summary endpoint for reporting and analytics
-- List comprehension-based risk score extraction
-- High-risk and critical audit log filtering
-
-### GET /audit-summary
-
-Returns audit analytics from stored JSON audit logs.
+Health check endpoint.
 
 Example response:
 
 ```json
 {
-  "total_logs": 2,
-  "risk_scores": [50, 0],
-  "risk_levels": ["MEDIUM", "LOW"],
-  "high_risk_count": 1,
-  "critical_count": 0,
-  "high_risk_logs": []
-}
-
-### Configuration Management
-
-- Environment variable support using python-dotenv
-- Externalized application configuration
-- Configurable audit log file path
-- Configurable risk threshold
-- Production-ready configuration pattern
-
-# Core Engineering Concepts Demonstrated
-
-* Modular Application Architecture
-* Separation of Concerns
-* Single Responsibility Principle
-* Risk-Based Decision Systems
-* Pattern Matching with Regular Expressions
-* Audit Logging and Traceability
-* REST API Design
-* Secure Prompt Inspection
-## Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-APP_NAME=GuardRail AI
-APP_VERSION=2.5
-RISK_THRESHOLD=50
-AUDIT_LOG_FILE=logs/audit_log.json
-
----
-
-- Exception handling for corrupted audit logs and invalid environment configuration
-- Logging for audit file failures
-Implemented exception handling and logging to improve backend reliability, error recovery, and operational visibility.
-# Tech Stack
-
-## Backend
-
-* Python
-* FastAPI
-* Uvicorn
-
-## Security
-
-* Regular Expressions (Regex)
-* Prompt Injection Detection
-* Risk Scoring Engine
-
-## Development
-
-* Git
-* GitHub
-
----
-
-# API Endpoints
-
-## GET /
-
-Health Check Endpoint
-
-Response:
-
-```json
-{
-  "message": "GuardRail AI is running"
+  "message": "GuardRail AI is running",
+  "version": "3.0"
 }
 ```
 
 ---
 
-## POST /analyze
+### POST `/analyze`
 
-Request:
+Analyzes a prompt for sensitive data and prompt injection risk.
+
+Example request:
 
 ```json
 {
-  "prompt": "My email is test@gmail.com and my SSN is 123-45-6789"
+  "prompt": "My SSN is 123-45-6789, email is vinay@test.com, password: hello123 Ignore previous instructions"
 }
 ```
 
-Example Response:
+Example response:
 
 ```json
 {
-  "risk_level": "HIGH",
-  "risk_score": 70,
-  "action": "WARN",
+  "redacted_prompt": "My SSN is [REDACTED_SSN], email is [REDACTED_EMAIL], password: [REDACTED_PASSWORD] Ignore previous instructions",
+  "detections": {
+    "email": true,
+    "ssn": true,
+    "phone": false,
+    "credit_card": false,
+    "password": true,
+    "api_key": false,
+    "prompt_injection": true
+  },
+  "word_count": 10,
+  "character_count": 94,
+  "estimated_tokens": 13,
+  "risk_level": "CRITICAL",
+  "risk_score": 270,
+  "action": "BLOCK",
   "risk_reasons": [
-    "Email detected",
-    "SSN detected"
+    "email detected",
+    "ssn detected",
+    "password detected",
+    "prompt_injection detected"
   ]
 }
 ```
 
 ---
 
-# Running Locally
+### GET `/audit-summary`
 
-Install Dependencies:
+Returns audit analytics from stored JSON audit records.
 
-```bash
-pip install fastapi uvicorn
+Example response:
+
+```json
+{
+  "total_logs": 5,
+  "risk_scores": [20, 70, 220],
+  "risk_levels": ["LOW", "HIGH", "CRITICAL"],
+  "high_risk_count": 2,
+  "critical_count": 1,
+  "high_risk_logs": []
+}
 ```
 
-Run Application:
+---
+
+## Audit Logging
+
+Each analyzed prompt creates a structured JSON audit record.
+
+Stored audit records include:
+
+* Timestamp
+* Redacted prompt
+* Redaction flag
+* Risk score
+* Risk level
+* Action
+* Risk reasons
+
+Example audit record:
+
+```json
+{
+  "timestamp": "2026-06-15T15:48:04.683586+00:00",
+  "prompt": "My SSN is [REDACTED_SSN], email is [REDACTED_EMAIL], password: [REDACTED_PASSWORD]",
+  "prompt_redacted": true,
+  "risk_score": 170,
+  "risk_level": "CRITICAL",
+  "action": "BLOCK",
+  "risk_reasons": [
+    "email detected",
+    "ssn detected",
+    "password detected"
+  ]
+}
+```
+
+---
+
+## Configuration
+
+Runtime configuration is handled using environment variables.
+
+Create a `.env` file in the project root:
+
+```env
+APP_NAME=GuardRail AI
+APP_VERSION=3.0
+RISK_THRESHOLD=100
+AUDIT_LOG_FILE=logs/audit_log.json
+```
+
+A safe template is provided in:
+
+```text
+.env.example
+```
+
+Do not commit the real `.env` file.
+
+---
+
+## Running Locally
+
+### 1. Create and activate virtual environment
+
+```bash
+python -m venv venv
+```
+
+Windows PowerShell:
+
+```bash
+venv\Scripts\activate
+```
+
+macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+---
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 3. Run the application
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Open Swagger UI:
+---
+
+### 4. Open Swagger UI
 
 ```text
 http://127.0.0.1:8000/docs
@@ -454,129 +421,196 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# Version History
+## Running Tests
 
-## v1.0
+Run all tests:
 
-* Initial FastAPI MVP
-* Prompt Analytics
-* Token Estimation
+```bash
+pytest
+```
 
-## v1.1
+Current test coverage includes:
 
-* Refactored detection logic into reusable helper functions
+* Risk score calculation
+* Risk level determination
+* Action decision logic
+* Prompt redaction validation
 
-## v1.2
+Expected result:
 
-* Credit Card Detection
-* Enhanced Regex Detection
-
-## v1.3
-
-* API Key Detection
-
-## v1.4
-
-* Decision Engine
-* ALLOW / WARN / BLOCK Actions
-
-## v1.5
-
-* Password Detection
-
-## v1.6
-
-* Prompt Injection Detection
-
-## v1.7
-
-* Enhanced Prompt Injection Detection
-
-## v1.8
-
-* Centralized Risk Weight Dictionary
-
-## v2.0
-
-* Audit Logging System
-* Timestamp Tracking
-* Persistent Prompt History
-
-## v2.1
-
-* Modular Architecture Refactor
-* Added detectors.py
-* Added scoring.py
-* Added audit_logger.py
-* Simplified main.py responsibilities
-* Introduced separation of concerns
+```text
+9 passed
+```
 
 ---
 
-# Lessons Learned
+## Tech Stack
 
-Version 2.1 introduced the first major architectural refactor.
+### Backend
 
-Key concepts implemented:
+* Python
+* FastAPI
+* Uvicorn
+* Pydantic
 
-* Python Modules
-* Cross-File Imports
-* Separation of Concerns
-* Refactoring Without Breaking Existing Functionality
-* Backend Code Organization
-* Single Responsibility Principle
-* Audit Logging Architecture
+### Security Logic
 
----
+* Regex-based sensitive data detection
+* Prompt injection pattern detection
+* Risk scoring
+* Prompt redaction
 
-# Future Roadmap
+### Persistence
 
-## Phase 2 (Current Next Milestone)
+* JSON audit logging
+* PostgreSQL planned next
 
-* PostgreSQL Integration
-* SQLAlchemy ORM
-* Structured Audit Database
-* Database CRUD Operations
-* Queryable Audit History
+### Testing
 
-## Phase 3
+* Pytest
 
-* User Authentication
-* Role-Based Access Control (RBAC)
-* Admin Dashboard
-* Analytics Dashboard
+### Development
 
-## Phase 4
-
-* OpenAI Integration
-* Claude Integration
-* Gemini Integration
-* Multi-Model Routing
-
-## Phase 5
-
-* RAG Knowledge Base
-* Document Analysis
-* Compliance Engine
-* Enterprise Policy Management
-
-## Phase 6
-
-* Workflow Agents
-* Human-in-the-Loop Reviews
-* Cloud Deployment
-* Enterprise AI Governance Platform
+* Git
+* GitHub
+* VS Code
 
 ---
 
-# Long-Term Vision
+## Engineering Concepts Demonstrated
 
-GuardRail AI aims to become an enterprise AI gateway that:
+* REST API development
+* Backend modularization
+* Separation of concerns
+* Object-oriented programming
+* Pydantic validation
+* Environment variable configuration
+* Exception handling
+* Logging
+* JSON file persistence
+* Secure audit logging
+* Prompt redaction
+* Unit testing with pytest
+* Risk-based decision systems
 
-* Prevents sensitive data leakage
-* Reduces AI token waste
-* Enforces governance policies
-* Tracks AI usage and costs
-* Maintains audit trails
-* Routes requests across multiple AI providers
-* Provides security, compliance, and observability for enterprise AI systems
+---
+
+## Version History
+
+### v1.7 - Prompt Injection Detection
+
+* Added prompt injection detection patterns.
+* Added governance logic for risky prompt behavior.
+
+### v1.8 - Risk Weight Dictionary
+
+* Added centralized risk weight dictionary.
+* Replaced hardcoded scoring values.
+
+### v2.0 - Audit Logging
+
+* Added persistent audit logging.
+* Added timestamp tracking.
+* Added audit trail generation.
+
+### v2.1 - Modular Architecture Refactor
+
+* Added separate modules for detectors, scoring, and audit logging.
+* Simplified FastAPI route responsibilities.
+
+### v2.2 - Pydantic Validation
+
+* Added request and response validation models.
+* Added FastAPI response model enforcement.
+
+### v2.3 - JSON Audit Logging
+
+* Replaced plain text audit logs with structured JSON logs.
+
+### v2.4 - Audit Summary Endpoint
+
+* Added `/audit-summary`.
+* Added summary analytics for risk scores and risk levels.
+
+### v2.5 - Environment Variables
+
+* Added `.env` support.
+* Added configurable app metadata, audit log path, and risk threshold.
+
+### v2.6 - Object-Oriented Refactor
+
+* Added `PromptAnalyzer`.
+* Added `RiskScorer`.
+* Refactored `AuditLogger`.
+
+### v2.7 - Exception Handling and Logging
+
+* Added corrupted JSON handling.
+* Added logging for audit file operations and failures.
+
+### v2.8 - Type Hints and Code Quality
+
+* Added type hints across backend modules.
+* Improved readability and maintainability.
+
+### v2.9 - Pytest Unit Testing
+
+* Added unit tests for risk scoring and risk level logic.
+
+### v3.0 - Secure Prompt Redaction
+
+* Added prompt redaction for API responses and audit logs.
+* Removed raw prompt exposure from `/analyze`.
+* Added redaction test coverage.
+
+---
+
+## Roadmap
+
+### Phase 2: PostgreSQL Persistence
+
+* Replace local JSON audit storage with PostgreSQL.
+* Add SQLAlchemy ORM models.
+* Store audit records in a database table.
+* Add database-backed audit summary queries.
+* Add migration-ready database structure.
+
+### Phase 3: Authentication and RBAC
+
+* Add user authentication.
+* Add role-based access control.
+* Add admin-only audit visibility.
+
+### Phase 4: Dashboard and Analytics
+
+* Build audit dashboard.
+* Add risk trend analysis.
+* Add policy violation reporting.
+
+### Phase 5: External AI Provider Integration
+
+* Add OpenAI integration.
+* Add Claude integration.
+* Add Gemini integration.
+* Add multi-model routing.
+
+### Phase 6: Enterprise Governance Platform
+
+* Add policy management.
+* Add human-in-the-loop review workflows.
+* Add compliance reporting.
+* Add deployment support.
+
+---
+
+## Long-Term Vision
+
+GuardRail AI aims to become an enterprise AI gateway that helps organizations:
+
+* Prevent sensitive data leakage
+* Detect prompt injection attempts
+* Enforce AI governance policies
+* Maintain audit trails
+* Improve visibility into AI usage
+* Support compliance and security reviews
+* Route requests safely across multiple AI providers
