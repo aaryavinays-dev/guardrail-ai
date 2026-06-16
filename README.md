@@ -604,6 +604,42 @@ Expected result:
 * Add database-backed audit summary queries.
 * Add migration-ready database structure.
 
+### PostgreSQL Audit Logging
+
+GuardRail AI now stores audit records in PostgreSQL instead of relying only on local JSON logs. Each analyzed prompt is saved as a structured row in the `audit_logs` table after sensitive values are redacted.
+
+Current database-backed flow:
+
+```text
+/analyze
+→ detect sensitive data and prompt injection
+→ calculate risk score and action
+→ redact sensitive prompt content
+→ save audit record to PostgreSQL
+```
+
+The `/audit-summary` endpoint now queries PostgreSQL to return total logs, critical counts, high-risk counts, blocked counts, warning counts, and recent audit records.
+
+Database table:
+
+```text
+audit_logs
+- id
+- created_at
+- redacted_prompt
+- risk_score
+- risk_level
+- action
+- risk_reasons
+- prompt_redacted
+```
+
+Environment variable required:
+
+```env
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/guardrail_ai
+```
+
 ### Phase 3: Authentication and RBAC
 
 * Add user authentication.

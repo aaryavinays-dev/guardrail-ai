@@ -3,7 +3,11 @@ import os
 from typing import Any
 from redactor import redact_prompt
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from sqlalchemy.orm import Session
+
+from audit_repository import get_audit_summary, save_audit_log
+from database import get_db
 
 from audit_logger import AuditLogger
 from risk_scorer import RiskScorer
@@ -49,7 +53,7 @@ def home() -> dict[str, str]:
 
 
 @app.post("/analyze", response_model=RiskResponse)
-def analyze_prompt(request: PromptRequest) -> RiskResponse:
+def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     prompt = request.prompt
 
     word_count = len(prompt.split())
@@ -64,7 +68,14 @@ def analyze_prompt(request: PromptRequest) -> RiskResponse:
 
     redacted_prompt = redact_prompt(prompt)
 
-    audit_logger.save(prompt, risk_score, risk_level.value, action.value, risk_reasons)
+    save_audit_log(
+    db=db,
+    redacted_prompt=redacted_prompt,
+    risk_score=risk_score,
+    risk_level=risk_level.value,
+    action=action.value,
+    risk_reasons=risk_reasons,
+)
 
     return RiskResponse(
         redacted_prompt=redacted_prompt,
@@ -80,36 +91,5 @@ def analyze_prompt(request: PromptRequest) -> RiskResponse:
 
 
 @app.get("/audit-summary")
-def audit_summary() -> dict[str, Any]:
-    audit_logs = audit_logger.load_logs()
-
-    risk_scores = [
-        log.get("risk_score", 0)
-        for log in audit_logs
-    ]
-
-    risk_levels = [
-        log.get("risk_level", "UNKNOWN")
-        for log in audit_logs
-    ]
-
-    high_risk_logs = [
-        log
-        for log in audit_logs
-        if log.get("risk_score", 0) >= 50
-    ]
-
-    critical_logs = [
-        log
-        for log in audit_logs
-        if log.get("risk_level") == "CRITICAL"
-    ]
-
-    return {
-        "total_logs": len(audit_logs),
-        "risk_scores": risk_scores,
-        "risk_levels": risk_levels,
-        "high_risk_count": len(high_risk_logs),
-        "critical_count": len(critical_logs),
-        "high_risk_logs": high_risk_logs,
-    }
+def audit_summary(db: Session = Depends(get_db)):
+    return get_audit_summary(db)

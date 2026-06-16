@@ -121,3 +121,50 @@ AUDIT_LOG_FILE
 Environment variables are loaded using `python-dotenv` and accessed using `os.getenv()`.
 
 This allows the application to change runtime behavior without hardcoding values directly inside the source code.
+
+## PostgreSQL Integration Architecture
+
+GuardRail AI now uses PostgreSQL as the persistent audit storage layer.
+
+Current architecture:
+
+```text
+Client / Swagger UI
+        ↓
+FastAPI Endpoint: /analyze
+        ↓
+PromptAnalyzer
+        ↓
+RiskScorer
+        ↓
+Redactor
+        ↓
+Audit Repository
+        ↓
+SQLAlchemy Session
+        ↓
+PostgreSQL audit_logs table
+```
+
+Database-related files:
+
+```text
+database.py
+- Loads DATABASE_URL from .env
+- Creates SQLAlchemy engine
+- Creates SessionLocal
+- Provides get_db() dependency for FastAPI
+
+db_models.py
+- Defines the AuditLog SQLAlchemy model
+- Maps the Python class to the PostgreSQL audit_logs table
+
+audit_repository.py
+- Saves analyzed prompt results into PostgreSQL
+- Generates audit summary data from PostgreSQL
+```
+
+Security note:
+
+Only redacted prompts are stored in PostgreSQL. Raw sensitive values such as emails, SSNs, passwords, phone numbers, credit cards, and API keys should not be persisted in the audit table.
+

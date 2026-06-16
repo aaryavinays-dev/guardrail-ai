@@ -424,7 +424,21 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 ```text
 37 passed
 ```
+## PostgreSQL Audit Logging
+
+* Added PostgreSQL support for GuardRail AI audit logging.
+* Created a dedicated `guardrail_ai` PostgreSQL database.
+* Created an `audit_logs` table to store analyzed prompt records.
+* Added SQLAlchemy database connection setup in `database.py`.
+* Added SQLAlchemy `AuditLog` model in `db_models.py`.
+* Added repository functions in `audit_repository.py` for saving audit logs and generating audit summaries.
+* Updated `/analyze` to save redacted audit records into PostgreSQL.
+* Updated `/audit-summary` to read summary data from PostgreSQL instead of the local JSON log file.
+* Verified that sensitive prompts are redacted before database storage.
+* Confirmed existing test suite passes with PostgreSQL integration: `37 passed`.
 
 ### Outcome
 
-GuardRail AI now has cleaner Python architecture, safer controlled business values through enums, and expanded automated test coverage across detectors, redaction, scoring, and prompt analysis.
+### Outcome
+
+GuardRail AI now has persistent PostgreSQL-backed audit logging. The `/analyze` endpoint saves redacted prompt analysis records into PostgreSQL, and `/audit-summary` reads live summary data from the database.
