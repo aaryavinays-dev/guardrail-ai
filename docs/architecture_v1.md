@@ -168,3 +168,29 @@ Security note:
 
 Only redacted prompts are stored in PostgreSQL. Raw sensitive values such as emails, SSNs, passwords, phone numbers, credit cards, and API keys should not be persisted in the audit table.
 
+## Database Health Check Flow
+
+GuardRail AI includes a `/health/db` endpoint for checking PostgreSQL connectivity.
+
+Flow:
+
+```text
+Client / Swagger UI
+        ↓
+GET /health/db
+        ↓
+FastAPI dependency get_db()
+        ↓
+SQLAlchemy Session
+        ↓
+SELECT 1
+        ↓
+PostgreSQL connection verified
+```
+
+Purpose:
+
+* Confirms the backend can reach PostgreSQL.
+* Helps debug deployment and environment issues.
+* Provides a simple operational readiness check for the database layer.
+

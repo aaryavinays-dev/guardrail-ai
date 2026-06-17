@@ -3,9 +3,10 @@ import os
 from typing import Any
 from redactor import redact_prompt
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
-
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 from audit_repository import get_audit_summary, save_audit_log
 from database import get_db
 
@@ -93,3 +94,19 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
 @app.get("/audit-summary")
 def audit_summary(db: Session = Depends(get_db)):
     return get_audit_summary(db)
+
+@app.get("/health/db")
+def database_health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+
+        return {
+            "status": "ok",
+            "database": "connected",
+        }
+
+    except SQLAlchemyError:
+        raise HTTPException(
+            status_code=503,
+            detail="Database connection failed",
+        )

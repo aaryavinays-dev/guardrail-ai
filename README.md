@@ -640,6 +640,28 @@ Environment variable required:
 DATABASE_URL=postgresql://postgres:your_password@localhost:5432/guardrail_ai
 ```
 
+### Database Health Check
+
+GuardRail AI includes a database health check endpoint to verify that the FastAPI backend can connect to PostgreSQL.
+
+Endpoint:
+
+```text
+GET /health/db
+```
+
+Successful response:
+
+```json
+{
+  "status": "ok",
+  "database": "connected"
+}
+```
+
+This endpoint runs a lightweight PostgreSQL query using SQLAlchemy to confirm that the database connection is working.
+
+
 ### Phase 3: Authentication and RBAC
 
 * Add user authentication.

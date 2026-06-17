@@ -437,8 +437,16 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Verified that sensitive prompts are redacted before database storage.
 * Confirmed existing test suite passes with PostgreSQL integration: `37 passed`.
 
-### Outcome
+## Database Health Check Endpoint
+
+* Added `/health/db` endpoint to verify PostgreSQL connectivity from the FastAPI backend.
+* Used SQLAlchemy `text("SELECT 1")` to run a lightweight database check.
+* Added database error handling with `SQLAlchemyError`.
+* Returns a successful response when PostgreSQL is reachable.
+* Returns HTTP `503` if the database connection fails.
 
 ### Outcome
 
-GuardRail AI now has persistent PostgreSQL-backed audit logging. The `/analyze` endpoint saves redacted prompt analysis records into PostgreSQL, and `/audit-summary` reads live summary data from the database.
+GuardRail AI now has a production-style database health check endpoint that confirms the backend can communicate with PostgreSQL.
+
+
