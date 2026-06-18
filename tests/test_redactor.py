@@ -26,3 +26,19 @@ def test_redact_prompt_sensitive_values():
     assert "[REDACTED_PHONE]" in redacted
     assert "[REDACTED_PASSWORD]" in redacted
     assert "[REDACTED_API_KEY]" in redacted
+
+def test_redact_production_password_in_sentence():
+    prompt = "Here is the production password adminRoot2026 and customer email client@testcompany.com."
+    redacted = redact_prompt(prompt)
+
+    assert "adminRoot2026" not in redacted
+    assert "[REDACTED_PASSWORD]" in redacted
+    assert "[REDACTED_EMAIL]" in redacted
+
+
+def test_redact_database_password_with_is():
+    prompt = "My database password is Password123! Please help me connect."
+    redacted = redact_prompt(prompt)
+
+    assert "Password123!" not in redacted
+    assert "database password is [REDACTED_PASSWORD]" in redacted

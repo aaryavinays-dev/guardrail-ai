@@ -27,19 +27,34 @@ def detect_api_key(prompt: str) -> bool:
 
 
 def detect_password(prompt: str) -> bool:
-    password_pattern = r"\b(password|pwd|passcode)\s*[:=]\s*\S+"
-    return bool(re.search(password_pattern, prompt, re.IGNORECASE))
+    password_patterns = [
+        r"\b(password|pwd|passcode)\s*[:=]\s*\S+",
+        r"\b(password|pwd|passcode)\s+(is|as)\s+\S+",
+        r"\b(production|database|admin|root)\s+password\s+\S+",
+    ]
+
+    for pattern in password_patterns:
+        if re.search(pattern, prompt, re.IGNORECASE):
+            return True
+
+    return False
 
 
 def detect_prompt_injection(prompt: str) -> bool:
     suspicious_patterns = [
-        r"ignore previous instructions",
-        r"reveal system prompt",
-        r"bypass policy",
-        r"forget your rules",
-        r"disable safety",
-        r"override instructions",
-        r"act as unrestricted",
+        r"ignore\s+(all\s+)?(previous|prior|earlier)\s+instructions",
+        r"reveal\s+(the\s+)?system\s+prompt",
+        r"show\s+(me\s+)?(the\s+)?system\s+prompt",
+        r"bypass\s+(the\s+)?(policy|rules|safety)",
+        r"forget\s+(all\s+)?(your\s+)?rules",
+        r"disable\s+(all\s+)?safety",
+        r"override\s+(the\s+)?instructions",
+        r"act\s+as\s+(an\s+)?unrestricted",
+        r"pretend\s+you\s+are\s+not\s+restricted",
+        r"not\s+restricted\s+by\s+safety\s+policies",
+        r"jailbreak",
+        r"developer\s+mode",
+        r"\bDAN\b",
     ]
 
     for pattern in suspicious_patterns:

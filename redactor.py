@@ -35,8 +35,29 @@ def redact_prompt(prompt: str) -> str:
     )
 
     redacted_prompt = re.sub(
+        r"\b((?:production|database|admin|root)\s+password)\s+(is|as)\s+\S+",
+        r"\1 \2 [REDACTED_PASSWORD]",
+        redacted_prompt,
+        flags=re.IGNORECASE,
+    )
+
+    redacted_prompt = re.sub(
+        r"\b((?:production|database|admin|root)\s+password)\s+(?!(?:is|as)\b)\S+",
+        r"\1 [REDACTED_PASSWORD]",
+        redacted_prompt,
+        flags=re.IGNORECASE,
+    )
+
+    redacted_prompt = re.sub(
         r"\b(password|pwd|passcode)\s*[:=]\s*\S+",
         r"\1: [REDACTED_PASSWORD]",
+        redacted_prompt,
+        flags=re.IGNORECASE,
+    )
+
+    redacted_prompt = re.sub(
+        r"\b(password|pwd|passcode)\s+(is|as)\s+\S+",
+        r"\1 \2 [REDACTED_PASSWORD]",
         redacted_prompt,
         flags=re.IGNORECASE,
     )
