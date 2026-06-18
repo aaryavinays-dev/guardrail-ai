@@ -1,5 +1,37 @@
 # Changelog
 
+## Version 4.0 - API Key Authentication
+
+### Added
+
+* Added API key authentication using FastAPI security dependencies.
+* Created `auth.py` to centralize API key validation logic.
+* Added `x-api-key` header validation for protected endpoints.
+* Protected `/analyze` so unauthorized clients cannot create audit records.
+* Protected `/audit-summary` so unauthorized clients cannot view audit activity.
+* Added `GUARDRAIL_API_KEY` environment variable support.
+* Added API key template value to `.env.example`.
+* Added automated authentication tests using FastAPI `TestClient`.
+
+### Improved
+
+* Improved backend security by rejecting requests with missing or invalid API keys.
+* Prevented unauthorized prompt analysis requests from writing to PostgreSQL.
+* Prevented unauthorized users from viewing PostgreSQL-backed audit summaries.
+* Moved authentication logic into a separate module for cleaner architecture.
+
+### Validation
+
+* Verified missing API key returns `401 Unauthorized`.
+* Verified valid API key allows `/analyze` to run successfully.
+* Verified protected endpoint behavior through Swagger.
+* Added tests for valid API key, missing API key, wrong API key, missing server configuration, `/analyze` protection, and `/audit-summary` protection.
+* Confirmed full test suite passes with `49 passed`.
+
+### Outcome
+
+GuardRail AI now has a protected API layer. Sensitive governance endpoints require a valid `x-api-key` header before prompt analysis or audit summary access is allowed.
+
 ## Version 3.3 - Detector Hardening and PostgreSQL Audit Validation
 
 ### Added

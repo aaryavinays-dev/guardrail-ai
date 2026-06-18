@@ -1,12 +1,13 @@
 from dotenv import load_dotenv
 import os
-from typing import Any
 from redactor import redact_prompt
 
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+
+from auth import verify_api_key
 from audit_repository import get_audit_summary, save_audit_log
 from database import get_db
 
@@ -53,7 +54,11 @@ def home() -> dict[str, str]:
     }
 
 
-@app.post("/analyze", response_model=RiskResponse)
+@app.post(
+    "/analyze",
+    response_model=RiskResponse,
+    dependencies=[Depends(verify_api_key)],
+)
 def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     prompt = request.prompt
 
@@ -70,13 +75,13 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     redacted_prompt = redact_prompt(prompt)
 
     save_audit_log(
-    db=db,
-    redacted_prompt=redacted_prompt,
-    risk_score=risk_score,
-    risk_level=risk_level.value,
-    action=action.value,
-    risk_reasons=risk_reasons,
-)
+        db=db,
+        redacted_prompt=redacted_prompt,
+        risk_score=risk_score,
+        risk_level=risk_level.value,
+        action=action.value,
+        risk_reasons=risk_reasons,
+    )
 
     return RiskResponse(
         redacted_prompt=redacted_prompt,
@@ -91,9 +96,13 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     )
 
 
-@app.get("/audit-summary")
+@app.get(
+    "/audit-summary",
+    dependencies=[Depends(verify_api_key)],
+)
 def audit_summary(db: Session = Depends(get_db)):
     return get_audit_summary(db)
+
 
 @app.get("/health/db")
 def database_health_check(db: Session = Depends(get_db)):

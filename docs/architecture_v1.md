@@ -115,6 +115,48 @@ GET /health/db
 ├── runs SELECT 1
 └── confirms PostgreSQL connectivity
 ```
+## API Security Layer
+
+GuardRail AI now includes API key authentication for sensitive endpoints.
+
+```text
+Client Request
+    |
+    v
+x-api-key Header
+    |
+    v
+verify_api_key()
+    |
+    +--> Missing or invalid key: 401 Unauthorized
+    |
+    +--> Valid key: Continue to endpoint
+```
+
+Protected endpoints:
+
+```text
+POST /analyze
+GET /audit-summary
+```
+
+Purpose:
+
+```text
+Prevent unauthorized prompt analysis requests.
+Prevent unauthorized access to audit summaries.
+Prepare the backend for department-level usage tracking and role-based access control.
+```
+
+Authentication-related files:
+
+```text
+auth.py
+- Defines API key header name
+- Reads GUARDRAIL_API_KEY from environment variables
+- Validates incoming x-api-key header
+- Raises 401 Unauthorized for missing or invalid keys
+```
 
 ---
 

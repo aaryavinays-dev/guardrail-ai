@@ -62,6 +62,12 @@ GuardRail AI acts as a protective prompt governance layer that analyzes and cont
 * Environment variable configuration
 * Pytest regression testing
 * Swagger/OpenAPI documentation
+* API key authentication
+* Protected `/analyze` endpoint
+* Protected `/audit-summary` endpoint
+* `x-api-key` header validation
+* Unauthorized request handling with `401 Unauthorized`
+
 
 ---
 
@@ -78,6 +84,9 @@ GuardRail AI acts as a protective prompt governance layer that analyzes and cont
 | Current Storage   |                 PostgreSQL `audit_logs` table |
 | Previous Storage  |                          Local JSON audit log |
 | Current Milestone | PostgreSQL Audit Logging + Detector Hardening |
+Version: v4.0
+Test Cases: 49
+Current Milestone: API Key Authentication
 
 ---
 
@@ -269,6 +278,41 @@ This prevents sensitive values from being stored raw in PostgreSQL audit logs or
 | GET    | `/health/db`     | Verify PostgreSQL database connectivity                                                               |
 
 ---
+## API Key Authentication
+
+GuardRail AI protects sensitive governance endpoints using API key authentication.
+
+Protected endpoints:
+
+```text
+POST /analyze
+GET /audit-summary
+```
+
+Clients must send a valid API key using the `x-api-key` request header.
+
+Example header:
+
+```text
+x-api-key: guardrail-local-dev-key
+```
+
+If the API key is missing or invalid, the backend returns:
+
+```json
+{
+  "detail": "Invalid or missing API key"
+}
+```
+
+Status code:
+
+```text
+401 Unauthorized
+```
+
+This prevents unauthorized clients from creating audit records or viewing PostgreSQL-backed audit summaries.
+
 
 ## GET `/`
 
