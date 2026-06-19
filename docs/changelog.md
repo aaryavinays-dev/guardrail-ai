@@ -1,5 +1,27 @@
 # Changelog
 
+## Version 4.1 - Department and User Metadata
+
+### Added
+
+* Added `user_id` and `department` fields to the `/analyze` request body.
+* Added `user_id` and `department` fields to the `/analyze` response.
+* Added `user_id` and `department` columns to the PostgreSQL `audit_logs` table.
+* Updated audit logging to persist user and department metadata.
+* Updated `/audit-summary` to include user and department metadata in recent audit logs.
+* Added pytest coverage for `PromptRequest` user metadata.
+
+### Validation
+
+* Verified `/analyze` accepts user and department metadata.
+* Verified PostgreSQL stores user and department metadata.
+* Verified `/audit-summary` returns user and department metadata.
+* Confirmed test suite passes with `50 passed`.
+
+### Outcome
+
+GuardRail AI can now connect each prompt analysis to a specific user and department, enabling future department-level governance analytics such as blocked prompts, critical risks, and cost savings by department.
+
 ## Version 4.0 - API Key Authentication
 
 ### Added

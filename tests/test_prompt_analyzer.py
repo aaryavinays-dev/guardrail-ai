@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from prompt_analyzer import PromptAnalyzer
+from models import PromptRequest
 
 
 def test_prompt_analyzer_detects_multiple_risks():
@@ -54,3 +55,17 @@ def test_prompt_analyzer_safe_prompt_returns_false_for_all_detections():
     detections = analyzer.analyze(prompt)
 
     assert all(detected is False for detected in detections.values())
+
+
+
+
+def test_prompt_request_accepts_user_metadata():
+    request = PromptRequest(
+        prompt="Hello AI",
+        user_id="user_100",
+        department="Finance",
+    )
+
+    assert request.prompt == "Hello AI"
+    assert request.user_id == "user_100"
+    assert request.department == "Finance"

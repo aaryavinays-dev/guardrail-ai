@@ -7,7 +7,16 @@ class PromptRequest(BaseModel):
         min_length=1,
         description="User prompt to analyze for sensitive data and prompt injection risk.",
     )
-
+    user_id: str = Field(
+        ...,
+        min_length=1,
+        description="Unique identifier for the user submitting the prompt.",
+    )
+    department: str = Field(
+        ...,
+        min_length=1,
+        description="Department or business unit submitting the prompt.",
+    )
 
 class RiskResponse(BaseModel):
     redacted_prompt: str
@@ -19,3 +28,5 @@ class RiskResponse(BaseModel):
     risk_score: int
     action: str
     risk_reasons: list[str]
+    user_id: str
+    department: str 

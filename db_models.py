@@ -15,3 +15,5 @@ class AuditLog(Base):
     action = Column(String(20), nullable=False)
     risk_reasons = Column(Text, nullable=False)
     prompt_redacted = Column(Boolean, server_default=text("true"), nullable=False)
+    user_id = Column(String(50), nullable=False)
+    department = Column(String(100), nullable=False)

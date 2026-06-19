@@ -81,6 +81,8 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         risk_level=risk_level.value,
         action=action.value,
         risk_reasons=risk_reasons,
+        user_id=request.user_id,
+        department=request.department,
     )
 
     return RiskResponse(
@@ -93,6 +95,8 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         risk_score=risk_score,
         action=action.value,
         risk_reasons=risk_reasons,
+        user_id=request.user_id,
+        department=request.department,
     )
 
 

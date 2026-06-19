@@ -10,6 +10,8 @@ def save_audit_log(
     risk_level: str,
     action: str,
     risk_reasons: list[str],
+    user_id: str,
+    department: str,
 ) -> AuditLog:
     audit_log = AuditLog(
         redacted_prompt=redacted_prompt,
@@ -18,6 +20,8 @@ def save_audit_log(
         action=action,
         risk_reasons=", ".join(risk_reasons),
         prompt_redacted=True,
+        user_id=user_id,
+        department=department,
     )
 
     db.add(audit_log)
@@ -25,6 +29,10 @@ def save_audit_log(
     db.refresh(audit_log)
 
     return audit_log
+
+
+
+
 def get_audit_summary(db: Session) -> dict:
     total_logs = db.query(AuditLog).count()
 
@@ -72,6 +80,8 @@ def get_audit_summary(db: Session) -> dict:
                 "action": log.action,
                 "risk_reasons": log.risk_reasons,
                 "prompt_redacted": log.prompt_redacted,
+                "user_id": log.user_id,
+                "department": log.department,
             }
         )
 

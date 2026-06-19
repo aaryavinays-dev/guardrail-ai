@@ -52,7 +52,10 @@ def test_analyze_endpoint_requires_api_key(monkeypatch):
 
     response = client.post(
         "/analyze",
-        json={"prompt": "hello"},
+        json={"prompt": "hello",
+              "user_id": "user_test",
+              "department": "Engineering"},
+
     )
 
     assert response.status_code == 401
