@@ -19,6 +19,7 @@ from audit_logger import AuditLogger
 from risk_scorer import RiskScorer
 from prompt_analyzer import PromptAnalyzer
 from models import PromptRequest, RiskResponse
+from policy_engine import apply_department_policy
 from scoring import risk_weights
 
 
@@ -77,21 +78,26 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     risk_score, risk_reasons = risk_scorer.calculate_score(detections)
 
     risk_level = risk_scorer.determine_risk_level(risk_score)
-    action = risk_scorer.determine_action(risk_score)
+    initial_action = risk_scorer.determine_action(risk_score)
 
-    
+    final_action, risk_reasons = apply_department_policy(
+        department=request.department,
+        detections=detections,
+        current_action=initial_action.value,
+        risk_reasons=risk_reasons,
+    )
+
+    if final_action == "BLOCK":
+        blocked_cost_savings = estimated_cost
+
     redacted_prompt = redact_prompt(prompt)
-
-    if action.value == "BLOCK":
-       blocked_cost_savings = estimated_cost
-
 
     save_audit_log(
         db=db,
         redacted_prompt=redacted_prompt,
         risk_score=risk_score,
         risk_level=risk_level.value,
-        action=action.value,
+        action=final_action,
         risk_reasons=risk_reasons,
         user_id=request.user_id,
         department=request.department,
@@ -105,17 +111,16 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         detections=detections,
         word_count=word_count,
         character_count=character_count,
-        risk_level=risk_level.value,
-        risk_score=risk_score,
-        action=action.value,
-        risk_reasons=risk_reasons,
-        user_id=request.user_id,
         estimated_tokens=estimated_tokens,
         estimated_cost=estimated_cost,
         blocked_cost_savings=blocked_cost_savings,
+        risk_level=risk_level.value,
+        risk_score=risk_score,
+        action=final_action,
+        risk_reasons=risk_reasons,
+        user_id=request.user_id,
         department=request.department,
     )
-
 
 @app.get(
     "/audit-summary",

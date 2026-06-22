@@ -315,6 +315,8 @@ This prevents unauthorized clients from creating audit records or viewing Postgr
 
 * Department-level usage analytics with total requests, blocked prompts, critical risks, and top risk reasons.
 * Token and cost tracking for AI prompt analysis, including estimated token usage and estimated cost per request.
+* Blocked cost savings tracking to estimate AI spend prevented by blocking unsafe prompts.
+* Department-specific policy engine that applies custom AI governance rules by business unit.
 
 ## GET `/`
 

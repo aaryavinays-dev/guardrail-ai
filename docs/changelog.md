@@ -1,5 +1,42 @@
 # Changelog
 
+## Version 4.5 - Department-Specific Policy Engine
+
+### Added
+* Added department-specific policy engine for AI governance rules.
+* Added Finance policy to block SSN and credit card usage.
+* Added Engineering policy to block API key exposure.
+* Added HR policy to block password exposure.
+* Added global policy to block prompt injection attempts.
+* Integrated policy engine into `/analyze` so final action can override the initial risk-based action.
+* Added pytest coverage for department policy rules.
+
+### Validation
+* Verified Finance prompts with SSNs are blocked by policy.
+* Verified Engineering prompts with API keys are blocked by policy.
+* Verified safe prompts remain allowed.
+* Verified `/audit-summary` stores policy-driven action and policy reasons.
+* Confirmed test suite passes with `54 passed`.
+
+### Outcome
+GuardRail AI now applies department-specific governance rules, allowing different business units to follow different AI safety policies before prompts reach an external AI model.
+## Version 4.4 - Blocked Cost Savings
+
+### Added
+* Added blocked cost savings tracking for prompts blocked by GuardRail AI.
+* Added `blocked_cost_savings` column to PostgreSQL audit logs.
+* Updated `/analyze` response to return blocked cost savings.
+* Updated `/audit-summary` to include blocked cost savings in recent audit logs.
+
+### Validation
+* Verified blocked prompts return `blocked_cost_savings` equal to `estimated_cost`.
+* Verified allowed prompts return `blocked_cost_savings` as `0.0`.
+* Verified `/audit-summary` returns stored blocked cost savings values.
+* Confirmed test suite passes with `51 passed`.
+
+### Outcome
+GuardRail AI now estimates the AI cost prevented by blocking unsafe prompts before they reach an external model, creating a simple ROI signal for AI governance.
+
 ## Version 4.3 - Token and Cost Tracking
 
 ### Added
@@ -16,6 +53,7 @@
 
 ### Outcome
 GuardRail AI now tracks estimated AI usage and cost per prompt, creating the foundation for department-level cost analytics, blocked cost savings, and model routing.
+
 ## Version 4.2 - Department Usage Summary
 
 ### Added
