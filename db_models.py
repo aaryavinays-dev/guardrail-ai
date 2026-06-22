@@ -13,6 +13,7 @@ class AuditLog(Base):
     risk_score = Column(Integer, nullable=False)
     estimated_tokens = Column(Integer, nullable=False, default=0)
     estimated_cost = Column(Float, nullable=False, default=0.0)
+    blocked_cost_savings = Column(Float, nullable=False, default=0.0)
     risk_level = Column(String(20), nullable=False)
     action = Column(String(20), nullable=False)
     risk_reasons = Column(Text, nullable=False)

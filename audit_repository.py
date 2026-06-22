@@ -16,6 +16,7 @@ def save_audit_log(
     department: str,
     estimated_tokens: int,
     estimated_cost: float,
+    blocked_cost_savings: float,
 ) -> AuditLog:
     audit_log = AuditLog(
         redacted_prompt=redacted_prompt,
@@ -28,6 +29,7 @@ def save_audit_log(
         department=department,
         estimated_tokens=estimated_tokens,
         estimated_cost=estimated_cost,
+        blocked_cost_savings=blocked_cost_savings,
     )
 
     db.add(audit_log)
@@ -88,6 +90,7 @@ def get_audit_summary(db: Session) -> dict:
                 "department": log.department,
                 "estimated_tokens": log.estimated_tokens,
                 "estimated_cost": log.estimated_cost,
+                "blocked_cost_savings": log.blocked_cost_savings,
             }
         )
 

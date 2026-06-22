@@ -71,6 +71,7 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     estimated_tokens = int(word_count * 1.3)
     cost_per_token = 0.000002
     estimated_cost = round(estimated_tokens * cost_per_token, 6)
+    blocked_cost_savings = 0.0
 
     detections = prompt_analyzer.analyze(prompt)
     risk_score, risk_reasons = risk_scorer.calculate_score(detections)
@@ -78,7 +79,12 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     risk_level = risk_scorer.determine_risk_level(risk_score)
     action = risk_scorer.determine_action(risk_score)
 
+    
     redacted_prompt = redact_prompt(prompt)
+
+    if action.value == "BLOCK":
+       blocked_cost_savings = estimated_cost
+
 
     save_audit_log(
         db=db,
@@ -91,6 +97,7 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         department=request.department,
         estimated_tokens=estimated_tokens,
         estimated_cost=estimated_cost,
+        blocked_cost_savings=blocked_cost_savings,
     )
 
     return RiskResponse(
@@ -105,6 +112,7 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         user_id=request.user_id,
         estimated_tokens=estimated_tokens,
         estimated_cost=estimated_cost,
+        blocked_cost_savings=blocked_cost_savings,
         department=request.department,
     )
 

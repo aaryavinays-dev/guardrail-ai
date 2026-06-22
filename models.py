@@ -17,7 +17,7 @@ class PromptRequest(BaseModel):
         min_length=1,
         description="Department or business unit submitting the prompt.",
     )
-    
+
 
 class RiskResponse(BaseModel):
     redacted_prompt: str
@@ -32,3 +32,4 @@ class RiskResponse(BaseModel):
     department: str 
     estimated_tokens: int
     estimated_cost: float
+    blocked_cost_savings: float
