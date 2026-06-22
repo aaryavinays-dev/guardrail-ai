@@ -319,7 +319,7 @@ This prevents unauthorized clients from creating audit records or viewing Postgr
 * Department-specific policy engine that applies custom AI governance rules by business unit.
 * OpenAI gateway endpoint that blocks unsafe prompts before model invocation and routes safe prompts to an AI provider.
 * Provider failure handling for quota, billing, or configuration issues.
-
+* Model routing for the AI gateway, sending safe short prompts to a faster model and longer prompts to a stronger model.
 ## GET `/`
 
 Basic home endpoint.

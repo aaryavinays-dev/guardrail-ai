@@ -1,5 +1,25 @@
 # Changelog
 
+## Version 4.7 - Model Routing
+
+### Added
+* Added model routing logic for the `/gateway` endpoint.
+* Added fast model routing for safe short prompts.
+* Added strong model routing for safe longer prompts.
+* Added blocked prompt routing where no model is selected or called.
+* Added `selected_model` field to gateway responses.
+
+### Validation
+* Verified blocked prompts return `selected_model = null` and `model_called = false`.
+* Verified safe short prompts route to the fast model.
+* Verified safe long prompts route to the strong model.
+* Verified gateway provider failure handling still returns a controlled response.
+* Verified audit logs continue storing gateway request outcomes.
+* Confirmed test suite passes with `54 passed`.
+
+### Outcome
+GuardRail AI now routes safe prompts to different AI models based on prompt complexity while blocking unsafe prompts before model invocation, improving cost-performance control for enterprise AI usage.
+
 ## Version 4.6 - OpenAI Gateway
 
 ### Added

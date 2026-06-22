@@ -48,3 +48,4 @@ class GatewayResponse(BaseModel):
     blocked_cost_savings: float
     ai_response: str | None
     model_called: bool
+    selected_model: str | None

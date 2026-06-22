@@ -30,6 +30,8 @@ APP_NAME = os.getenv("APP_NAME", "GuardRail AI")
 APP_VERSION = os.getenv("APP_VERSION", "1.0")
 AUDIT_LOG_FILE = os.getenv("AUDIT_LOG_FILE", "logs/audit_log.json")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+OPENAI_FAST_MODEL = os.getenv("OPENAI_FAST_MODEL", "gpt-4.1-mini")
+OPENAI_STRONG_MODEL = os.getenv("OPENAI_STRONG_MODEL", "gpt-4.1")
 
 
 def get_risk_threshold() -> int:
@@ -37,6 +39,16 @@ def get_risk_threshold() -> int:
         return int(os.getenv("RISK_THRESHOLD", "100"))
     except ValueError:
         return 100
+
+
+def select_model(estimated_tokens: int, final_action: str) -> str | None:
+    if final_action == "BLOCK":
+        return None
+
+    if estimated_tokens <= 50:
+        return OPENAI_FAST_MODEL
+
+    return OPENAI_STRONG_MODEL
 
 
 RISK_THRESHOLD = get_risk_threshold()
@@ -153,6 +165,11 @@ def gateway_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         risk_reasons=risk_reasons,
     )
 
+    selected_model = select_model(
+        estimated_tokens=estimated_tokens,
+        final_action=final_action,
+    )
+
     if final_action == "BLOCK":
         blocked_cost_savings = estimated_cost
 
@@ -187,11 +204,12 @@ def gateway_prompt(request: PromptRequest, db: Session = Depends(get_db)):
             blocked_cost_savings=blocked_cost_savings,
             ai_response="Prompt blocked by GuardRail AI policy. Model was not called.",
             model_called=False,
+            selected_model=selected_model,
         )
 
     try:
         ai_result = openai_client.responses.create(
-            model=OPENAI_MODEL,
+            model=selected_model,
             input=redacted_prompt,
         )
 
@@ -218,6 +236,7 @@ def gateway_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         blocked_cost_savings=blocked_cost_savings,
         ai_response=ai_response,
         model_called=model_called,
+        selected_model=selected_model,
     )
 
 
