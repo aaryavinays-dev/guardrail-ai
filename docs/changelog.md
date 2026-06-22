@@ -1,46 +1,96 @@
 # Changelog
 
-## Version 4.8 - Evaluation Harness
+## GuardRail AI — Enterprise AI Governance Gateway
+
+This changelog documents the evolution of GuardRail AI from a foundational FastAPI prompt-analysis backend into an enterprise-style AI governance gateway with audit logging, policy enforcement, cost tracking, model routing, and evaluation coverage.
+
+---
+
+## Phase 1 Completion Summary
+
+**Current Version:** `v4.8`
+**Current Phase:** Backend Phase 1 Complete
+**Current Milestone:** Enterprise AI Governance Gateway
+**Test Suite:** `54 passed`
+**Evaluation Harness:** `28/28 cases passed`
+**Primary Stack:** FastAPI, PostgreSQL, SQLAlchemy, Pydantic, Pytest, OpenAI SDK
+
+### Phase 1 Capabilities Completed
+
+* Sensitive data detection
+* Prompt injection detection
+* Risk scoring and risk-level classification
+* ALLOW / WARN / BLOCK decision engine
+* Secure prompt redaction
+* PostgreSQL audit logging
+* API key authentication
+* User and department metadata tracking
+* Department-level usage analytics
+* Token and cost tracking
+* Blocked cost savings tracking
+* Department-specific policy engine
+* AI gateway endpoint
+* OpenAI provider integration
+* Provider failure handling
+* Model routing
+* 28-case evaluation harness
+* 54 passing automated tests
+
+---
+
+## Version 4.8 — Evaluation Harness
 
 ### Added
+
 * Added evaluation harness under `evaluation/run_eval.py`.
 * Added 28 evaluation cases across safe prompts, emails, phones, SSNs, credit cards, passwords, API keys, prompt injection, and mixed-risk prompts.
 * Added category-level evaluation reporting.
 * Added automated comparison between expected GuardRail action and actual system action.
-* Added failed-case reporting for debugging policy or detector gaps.
+* Added failed-case reporting for debugging detector, scoring, or policy gaps.
 
 ### Validation
+
 * Verified evaluation harness runs successfully.
 * Verified all 28 evaluation cases passed.
 * Verified evaluation report shows `100.0%` accuracy.
 * Confirmed test suite passes with `54 passed`.
 
 ### Outcome
+
 GuardRail AI now includes a stronger evaluation harness that validates guardrail behavior across multiple prompt-risk categories and provides category-level accuracy reporting for demo and interview credibility.
 
-## Version 4.7 - Model Routing
+---
+
+## Version 4.7 — Model Routing
 
 ### Added
+
 * Added model routing logic for the `/gateway` endpoint.
 * Added fast model routing for safe short prompts.
 * Added strong model routing for safe longer prompts.
 * Added blocked prompt routing where no model is selected or called.
 * Added `selected_model` field to gateway responses.
+* Added `OPENAI_FAST_MODEL` and `OPENAI_STRONG_MODEL` environment configuration.
 
 ### Validation
+
 * Verified blocked prompts return `selected_model = null` and `model_called = false`.
 * Verified safe short prompts route to the fast model.
 * Verified safe long prompts route to the strong model.
-* Verified gateway provider failure handling still returns a controlled response.
+* Verified provider failure handling still returns a controlled response.
 * Verified audit logs continue storing gateway request outcomes.
 * Confirmed test suite passes with `54 passed`.
 
 ### Outcome
+
 GuardRail AI now routes safe prompts to different AI models based on prompt complexity while blocking unsafe prompts before model invocation, improving cost-performance control for enterprise AI usage.
 
-## Version 4.6 - OpenAI Gateway
+---
+
+## Version 4.6 — OpenAI Gateway
 
 ### Added
+
 * Added `/gateway` endpoint to evaluate prompts before model invocation.
 * Added gateway logic to block unsafe prompts before calling an external AI model.
 * Added OpenAI provider integration for safe prompts.
@@ -48,6 +98,7 @@ GuardRail AI now routes safe prompts to different AI models based on prompt comp
 * Added `model_called` and `ai_response` fields to gateway responses.
 
 ### Validation
+
 * Verified blocked Finance prompt with SSN returns `action = BLOCK`.
 * Verified blocked prompt returns `model_called = false`.
 * Verified blocked prompt does not call the OpenAI model.
@@ -57,19 +108,25 @@ GuardRail AI now routes safe prompts to different AI models based on prompt comp
 * Confirmed test suite passes with `54 passed`.
 
 ### Outcome
+
 GuardRail AI now functions as an AI gateway: unsafe prompts are blocked before reaching an external model, while safe prompts can be routed to an AI provider with graceful fallback handling.
-## Version 4.5 - Department-Specific Policy Engine
+
+---
+
+## Version 4.5 — Department-Specific Policy Engine
 
 ### Added
+
 * Added department-specific policy engine for AI governance rules.
 * Added Finance policy to block SSN and credit card usage.
 * Added Engineering policy to block API key exposure.
 * Added HR policy to block password exposure.
 * Added global policy to block prompt injection attempts.
-* Integrated policy engine into `/analyze` so final action can override the initial risk-based action.
+* Integrated policy engine into `/analyze` and `/gateway` so final actions can override initial risk-based actions.
 * Added pytest coverage for department policy rules.
 
 ### Validation
+
 * Verified Finance prompts with SSNs are blocked by policy.
 * Verified Engineering prompts with API keys are blocked by policy.
 * Verified safe prompts remain allowed.
@@ -77,44 +134,59 @@ GuardRail AI now functions as an AI gateway: unsafe prompts are blocked before r
 * Confirmed test suite passes with `54 passed`.
 
 ### Outcome
+
 GuardRail AI now applies department-specific governance rules, allowing different business units to follow different AI safety policies before prompts reach an external AI model.
-## Version 4.4 - Blocked Cost Savings
+
+---
+
+## Version 4.4 — Blocked Cost Savings
 
 ### Added
+
 * Added blocked cost savings tracking for prompts blocked by GuardRail AI.
 * Added `blocked_cost_savings` column to PostgreSQL audit logs.
 * Updated `/analyze` response to return blocked cost savings.
 * Updated `/audit-summary` to include blocked cost savings in recent audit logs.
 
 ### Validation
+
 * Verified blocked prompts return `blocked_cost_savings` equal to `estimated_cost`.
 * Verified allowed prompts return `blocked_cost_savings` as `0.0`.
 * Verified `/audit-summary` returns stored blocked cost savings values.
 * Confirmed test suite passes with `51 passed`.
 
 ### Outcome
+
 GuardRail AI now estimates the AI cost prevented by blocking unsafe prompts before they reach an external model, creating a simple ROI signal for AI governance.
 
-## Version 4.3 - Token and Cost Tracking
+---
+
+## Version 4.3 — Token and Cost Tracking
 
 ### Added
+
 * Added estimated token tracking for each `/analyze` request.
-* Added estimated cost calculation using a configurable-style cost-per-token baseline.
+* Added estimated cost calculation using a cost-per-token baseline.
 * Added `estimated_tokens` and `estimated_cost` columns to PostgreSQL audit logs.
 * Updated `/analyze` response to return estimated token and cost values.
 * Updated `/audit-summary` to include estimated token and cost values in recent audit logs.
 
 ### Validation
+
 * Verified `/analyze` returns `estimated_tokens` and `estimated_cost`.
 * Verified `/audit-summary` returns stored token and cost values from PostgreSQL.
 * Confirmed test suite passes with `51 passed`.
 
 ### Outcome
+
 GuardRail AI now tracks estimated AI usage and cost per prompt, creating the foundation for department-level cost analytics, blocked cost savings, and model routing.
 
-## Version 4.2 - Department Usage Summary
+---
+
+## Version 4.2 — Department Usage Summary
 
 ### Added
+
 * Added `/department-summary` endpoint to return department-level usage analytics.
 * Added total request count by department.
 * Added blocked prompt count by department.
@@ -123,14 +195,18 @@ GuardRail AI now tracks estimated AI usage and cost per prompt, creating the fou
 * Added pytest coverage for department summary aggregation logic.
 
 ### Validation
+
 * Verified `/department-summary` returns `200 OK` in Swagger.
 * Verified response includes department names, total requests, blocked count, critical count, and top risk reasons.
 * Confirmed test suite passes with `51 passed`.
 
 ### Outcome
+
 GuardRail AI now converts raw audit logs into department-level governance analytics, helping organizations identify which business units are creating the most AI risk.
 
-## Version 4.1 - Department and User Metadata
+---
+
+## Version 4.1 — Department and User Metadata
 
 ### Added
 
@@ -150,9 +226,11 @@ GuardRail AI now converts raw audit logs into department-level governance analyt
 
 ### Outcome
 
-GuardRail AI can now connect each prompt analysis to a specific user and department, enabling future department-level governance analytics such as blocked prompts, critical risks, and cost savings by department.
+GuardRail AI can now connect each prompt analysis to a specific user and department, enabling department-level governance analytics such as blocked prompts, critical risks, and cost savings by business unit.
 
-## Version 4.0 - API Key Authentication
+---
+
+## Version 4.0 — API Key Authentication
 
 ### Added
 
@@ -184,7 +262,9 @@ GuardRail AI can now connect each prompt analysis to a specific user and departm
 
 GuardRail AI now has a protected API layer. Sensitive governance endpoints require a valid `x-api-key` header before prompt analysis or audit summary access is allowed.
 
-## Version 3.3 - Detector Hardening and PostgreSQL Audit Validation
+---
+
+## Version 3.3 — Detector Hardening and PostgreSQL Audit Validation
 
 ### Added
 
@@ -218,7 +298,7 @@ GuardRail AI now handles stronger real-world security cases by detecting and red
 
 ---
 
-## Version 3.2 - PostgreSQL Audit Logging and Database Health Check
+## Version 3.2 — PostgreSQL Audit Logging and Database Health Check
 
 ### Added
 
@@ -231,7 +311,6 @@ GuardRail AI now handles stronger real-world security cases by detecting and red
 * Updated `/analyze` to save redacted audit records into PostgreSQL.
 * Updated `/audit-summary` to read summary data from PostgreSQL instead of the local JSON log file.
 * Added `/health/db` endpoint to verify PostgreSQL connectivity from the FastAPI backend.
-* Used SQLAlchemy `text("SELECT 1")` for a lightweight database health check.
 * Added database error handling with `SQLAlchemyError`.
 
 ### Improved
@@ -251,11 +330,11 @@ GuardRail AI now handles stronger real-world security cases by detecting and red
 
 ### Outcome
 
-GuardRail AI now has a PostgreSQL-backed audit logging layer and a production-style database health check endpoint. This moves the project from local file-based audit logging toward a more realistic enterprise backend architecture.
+GuardRail AI gained a PostgreSQL-backed audit logging layer and a production-style database health check endpoint, moving the project from local file-based persistence toward realistic enterprise backend architecture.
 
 ---
 
-## Version 3.1 - Python Polish, Enums, and Expanded Test Coverage
+## Version 3.1 — Python Polish, Enums, and Expanded Test Coverage
 
 ### Added
 
@@ -272,36 +351,21 @@ GuardRail AI now has a PostgreSQL-backed audit logging layer and a production-st
 * Improved test coverage for email, SSN, phone, credit card, password, API key, and prompt injection detection.
 * Improved confidence in the backend before PostgreSQL integration.
 
-### Concepts Practiced
-
-* Python Enums
-* `str, Enum`
-* Pure functions
-* Module extraction
-* Parametrized testing
-* Dictionary assertions
-* `set()`
-* `all()`
-* Circular import debugging
-* Separation of production code and test code
-
 ### Validation
 
-* Ran full pytest suite successfully.
 * Verified detector tests pass.
 * Verified redactor tests pass.
 * Verified PromptAnalyzer tests pass.
 * Verified RiskScorer enum tests pass.
+* Confirmed test suite passes with `37 passed`.
 
-### Test Result
+### Outcome
 
-```text
-37 passed
-```
+GuardRail AI became more modular, testable, and maintainable through enum-based decisions, separated redaction logic, and expanded detector coverage.
 
 ---
 
-## Version 3.0 - Secure Response Redaction
+## Version 3.0 — Secure Response Redaction
 
 ### Added
 
@@ -326,17 +390,17 @@ GuardRail AI now has a PostgreSQL-backed audit logging layer and a production-st
 
 ### Outcome
 
-GuardRail AI now performs safer prompt analysis by detecting sensitive data, redacting sensitive values from responses and audit logs, and maintaining automated test coverage for scoring and redaction logic.
+GuardRail AI began safely handling sensitive prompt content by detecting and redacting values before API responses and audit persistence.
 
 ---
 
-## Version 2.9 - Unit Testing with Pytest
+## Version 2.9 — Unit Testing with Pytest
 
 ### Added
 
 * Added pytest framework for automated backend testing.
-* Added unit tests for `RiskScorer` score calculation.
-* Added unit tests for `RiskScorer` risk level determination.
+* Added unit tests for risk score calculation.
+* Added unit tests for risk level determination.
 
 ### Improved
 
@@ -344,23 +408,13 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Improved confidence in backend scoring logic.
 * Created a testing foundation for future detectors, API routes, and database logic.
 
-### Validation
+### Outcome
 
-* Ran pytest successfully.
-* Confirmed scoring tests pass.
-* Confirmed risk level tests pass.
-
-### Concepts Learned
-
-* Pytest
-* Unit testing
-* Test functions
-* Assertions
-* Automated backend validation
+GuardRail AI gained its first automated validation layer through pytest-based unit testing.
 
 ---
 
-## Version 2.8 - Type Hints and Code Quality Cleanup
+## Version 2.8 — Type Hints and Code Quality Cleanup
 
 ### Added
 
@@ -375,17 +429,13 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Reduced ambiguity for future debugging and testing.
 * Made the backend closer to production-style Python code.
 
-### Concepts Learned
+### Outcome
 
-* Type hints
-* Function annotations
-* Return type annotations
-* Code readability
-* Production-style Python practices
+GuardRail AI became easier to read, maintain, and explain through stronger typing and cleaner function signatures.
 
 ---
 
-## Version 2.7 - Exception Handling and Backend Logging
+## Version 2.7 — Exception Handling and Backend Logging
 
 ### Added
 
@@ -402,24 +452,13 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Improved backend resilience by preventing corrupted audit logs from crashing the API.
 * Improved debugging visibility through structured backend log messages.
 
-### Validation
+### Outcome
 
-* Validated audit summary endpoint after implementing exception handling.
-* Validated application startup with invalid environment variable values.
-* Validated fallback behavior for corrupted audit log files.
-
-### Concepts Learned
-
-* `try` and `except`
-* `ValueError`
-* `json.JSONDecodeError`
-* Safe fallback behavior
-* Backend logging
-* Defensive programming
+GuardRail AI gained defensive programming behavior and better backend observability.
 
 ---
 
-## Version 2.6 - Object-Oriented Programming Refactor
+## Version 2.6 — Object-Oriented Programming Refactor
 
 ### Added
 
@@ -436,18 +475,13 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Simplified `main.py`.
 * Improved maintainability and future expansion.
 
-### Concepts Learned
+### Outcome
 
-* Classes
-* Objects
-* Methods
-* Encapsulation
-* Object-oriented backend design
-* Responsibility-based code organization
+GuardRail AI moved from procedural backend logic toward object-oriented, responsibility-based architecture.
 
 ---
 
-## Version 2.5 - Environment Variables and Configuration Management
+## Version 2.5 — Environment Variables and Configuration Management
 
 ### Added
 
@@ -464,23 +498,19 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Separated configuration from business logic.
 * Improved production readiness and deployment flexibility.
 
-### Concepts Learned
+### Outcome
 
-* Environment variables
-* Configuration management
-* `os.getenv()`
-* Type conversion from environment variables
-* Production configuration patterns
+GuardRail AI gained environment-based configuration suitable for local development and future deployment.
 
 ---
 
-## Version 2.4 - Audit Summary Endpoint and List Comprehensions
+## Version 2.4 — Audit Summary Endpoint
 
 ### Added
 
 * Added `/audit-summary` endpoint.
-* Added JSON audit log reading using `json.load()`.
-* Added list comprehensions to extract risk scores and risk levels.
+* Added JSON audit log reading.
+* Added extraction of risk scores and risk levels from audit records.
 * Added filtering logic for high-risk and critical audit records.
 * Added audit analytics response for reporting use cases.
 
@@ -489,31 +519,21 @@ GuardRail AI now performs safer prompt analysis by detecting sensitive data, red
 * Expanded GuardRail AI from operational prompt analysis to basic audit reporting.
 * Created a foundation for future dashboards and PostgreSQL-backed analytics.
 
-### Concepts Learned
+### Outcome
 
-* List comprehension syntax
-* Extracting fields from lists of dictionaries
-* Filtering dictionaries using conditions
-* Reading JSON logs and generating API summaries
+GuardRail AI gained its first reporting endpoint for summarizing prompt activity and risk trends.
 
 ---
 
-## Version 2.3 - JSON Audit Logging
-
-### Objective
-
-Replace plain-text audit logging with structured JSON audit logging to enable better persistence, analysis, and future dashboard/reporting capabilities.
+## Version 2.3 — JSON Audit Logging
 
 ### Added
 
 * Added JSON audit log storage using `audit_log.json`.
-* Added `json` library integration.
-* Converted audit records into Python dictionaries.
+* Converted audit records into structured Python dictionaries.
 * Converted datetime objects to strings for JSON compatibility.
-* Implemented file existence validation.
-* Added `json.load()` to read existing audit history.
-* Added `append()` logic to preserve previous audit records.
-* Added `json.dump()` to save updated audit logs.
+* Added file existence validation.
+* Added logic to read existing audit history and append new records.
 * Created structured list-of-dictionaries audit architecture.
 
 ### Validation
@@ -523,18 +543,13 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 * Verified JSON file persistence across API requests.
 * Verified audit history retention.
 
-### Concepts Learned
+### Outcome
 
-* JSON vs Python dictionaries
-* `json.loads()` and `json.dumps()`
-* `json.load()` and `json.dump()`
-* Lists containing dictionaries
-* Structured logging architecture
-* File persistence concepts
+GuardRail AI moved from plain-text audit records to structured JSON audit logging.
 
 ---
 
-## Version 2.2 - Pydantic Validation Layer
+## Version 2.2 — Pydantic Validation Layer
 
 ### Added
 
@@ -549,17 +564,13 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 * Improved API reliability by validating request and response structure.
 * Moved the application closer to production-style FastAPI architecture.
 
-### Concepts Learned
+### Outcome
 
-* Pydantic models
-* Request validation
-* Response validation
-* FastAPI response models
-* API schema enforcement
+GuardRail AI gained structured request and response validation through Pydantic.
 
 ---
 
-## Version 2.1 - Modular Architecture Refactor
+## Version 2.1 — Modular Architecture Refactor
 
 ### Added
 
@@ -571,19 +582,9 @@ Replace plain-text audit logging with structured JSON audit logging to enable be
 * Refactored audit logging into a dedicated logging module.
 * Simplified `main.py` to focus on FastAPI routing and request handling.
 
-### Concepts Learned
-
-* Python modules
-* Imports
-* Cross-file function calls
-* Separation of concerns
-* Single Responsibility Principle
-* Backend project organization
-* Refactoring without breaking existing functionality
-
 ### Validation
 
-Master Prompt:
+Master prompt validation:
 
 ```json
 {
@@ -591,7 +592,7 @@ Master Prompt:
 }
 ```
 
-Results:
+Result:
 
 ```text
 Email Detection: PASS
@@ -609,7 +610,7 @@ GuardRail AI transitioned from a single-file FastAPI application to a modular ba
 
 ---
 
-## Version 2.0 - Audit Logging
+## Version 2.0 — Audit Logging
 
 ### Added
 
@@ -618,16 +619,6 @@ GuardRail AI transitioned from a single-file FastAPI application to a modular ba
 * Logged prompt, risk score, risk level, action, and risk reasons.
 * Preserved historical records using append mode.
 
-### Concepts Learned
-
-* File handling
-* `open()`
-* `write()`
-* Append mode (`"a"`)
-* Audit trails
-* Persistence
-* Timestamps
-
 ### Validation
 
 * Tested master prompt through Swagger.
@@ -635,9 +626,13 @@ GuardRail AI transitioned from a single-file FastAPI application to a modular ba
 * Verified historical logs are preserved.
 * Confirmed audit records contain prompt metadata and decisions.
 
+### Outcome
+
+GuardRail AI gained a basic audit trail for prompt analysis activity.
+
 ---
 
-## Version 1.9 - Error Handling Research
+## Version 1.9 — Error Handling Research
 
 ### Researched
 
@@ -646,14 +641,13 @@ GuardRail AI transitioned from a single-file FastAPI application to a modular ba
 * `KeyError` handling.
 * Defensive coding for missing configuration values.
 
-### Future Enhancement
+### Outcome
 
-* Add `KeyError` handling around configurable risk scoring rules.
-* Improve system resilience when configuration values are missing or invalid.
+This research phase prepared the backend for later resilience improvements in logging, configuration, and audit summary behavior.
 
 ---
 
-## Version 1.8 - Risk Weight Dictionary Refactor
+## Version 1.8 — Risk Weight Dictionary Refactor
 
 ### Added
 
@@ -666,18 +660,9 @@ GuardRail AI transitioned from a single-file FastAPI application to a modular ba
 * Improved maintainability of risk scoring logic.
 * Made future detector weight changes easier to manage.
 
-### Concepts Learned
-
-* Dictionaries
-* Key-value pairs
-* Dictionary lookups
-* Increment operators (`+=`)
-* Refactoring
-* Maintainability
-
 ### Validation
 
-Master Prompt Test:
+Master prompt scoring:
 
 ```text
 Email: 20
@@ -687,3 +672,9 @@ Prompt Injection: 100
 Final Risk Score: 220
 Action: BLOCK
 ```
+
+### Outcome
+
+GuardRail AI gained a configurable scoring foundation for future detector expansion.
+
+---
