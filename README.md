@@ -93,76 +93,80 @@ GuardRail AI demonstrates how an enterprise backend can add a governance layer b
 
 ## System Architecture
 
-```text
-                          ┌──────────────────────┐
-                          │      API Client       │
-                          │ Swagger / App / Tool  │
-                          └───────────┬──────────┘
-                                      │
-                                      ▼
-                          ┌──────────────────────┐
-                          │      FastAPI API      │
-                          │ /analyze /gateway     │
-                          └───────────┬──────────┘
-                                      │
-                                      ▼
-                          ┌──────────────────────┐
-                          │  Pydantic Validation │
-                          │ PromptRequest         │
-                          └───────────┬──────────┘
-                                      │
-                                      ▼
-                          ┌──────────────────────┐
-                          │   Prompt Analyzer     │
-                          │ Detector Orchestration│
-                          └───────────┬──────────┘
-                                      │
-          ┌───────────────────────────┼───────────────────────────┐
-          ▼                           ▼                           ▼
-┌──────────────────┐       ┌──────────────────────┐       ┌──────────────────┐
-│ PII Detectors     │       │ Secret Detectors      │       │ Injection Detector│
-│ Email / SSN / etc │       │ Password / API Key    │       │ Jailbreak Attempts│
-└─────────┬────────┘       └──────────┬───────────┘       └─────────┬────────┘
-          └───────────────────────────┼─────────────────────────────┘
-                                      ▼
-                          ┌──────────────────────┐
-                          │   Risk Scoring       │
-                          │ Score + Risk Level   │
-                          └───────────┬──────────┘
-                                      │
-                                      ▼
-                          ┌──────────────────────┐
-                          │ Department Policy    │
-                          │ Finance / HR / Eng   │
-                          └───────────┬──────────┘
-                                      │
-                                      ▼
-                          ┌──────────────────────┐
-                          │ Final Decision        │
-                          │ ALLOW / WARN / BLOCK  │
-                          └───────────┬──────────┘
-                                      │
-                    ┌─────────────────┴─────────────────┐
-                    ▼                                   ▼
-        ┌──────────────────────┐             ┌──────────────────────┐
-        │ BLOCK Response        │             │ Safe Prompt Flow      │
-        │ No Model Call         │             │ Model Routing         │
-        └───────────┬──────────┘             └───────────┬──────────┘
-                    │                                    │
-                    ▼                                    ▼
-        ┌──────────────────────┐             ┌──────────────────────┐
-        │ Audit Repository      │             │ OpenAI Provider       │
-        │ SQLAlchemy            │             │ Fallback Handling     │
-        └───────────┬──────────┘             └───────────┬──────────┘
-                    │                                    │
-                    ▼                                    ▼
-             ┌────────────────────────────────────────────────┐
-             │              PostgreSQL audit_logs              │
-             │ Risk, Policy, Cost, Department, User, Action    │
-             └────────────────────────────────────────────────┘
-```
+## System Architecture
 
----
+```text
+┌────────────────────────────────────┐
+│ API Client                          │
+│ Swagger UI / Frontend / Internal App│
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ FastAPI Gateway Layer               │
+│ /analyze  /gateway  /audit-summary  │
+│ /department-summary  /health/db      │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ Authentication + Validation         │
+│ x-api-key + Pydantic Request Models │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ Prompt Analyzer                     │
+│ Orchestrates all risk detectors     │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ Detection Layer                     │
+│ PII + Secrets + Prompt Injection    │
+│ Email, SSN, Phone, Credit Card      │
+│ Password, API Key, Jailbreak Risk   │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ Risk Scoring Engine                 │
+│ Score + Risk Level + Initial Action │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ Department Policy Engine            │
+│ Finance / HR / Engineering Rules    │
+└──────────────────┬─────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────┐
+│ Final Governance Decision           │
+│ ALLOW / WARN / BLOCK                │
+└──────────────┬─────────────────────┘
+               │
+      ┌────────┴────────┐
+      │                 │
+      ▼                 ▼
+┌──────────────┐  ┌────────────────────┐
+│ BLOCK Flow   │  │ SAFE Prompt Flow    │
+│ No Model Call│  │ Model Routing       │
+└──────┬───────┘  └──────────┬─────────┘
+       │                     │
+       ▼                     ▼
+┌──────────────┐  ┌────────────────────┐
+│ Redaction    │  │ OpenAI Provider     │
+│ Audit Record │  │ Fallback Handling   │
+└──────┬───────┘  └──────────┬─────────┘
+       │                     │
+       └──────────┬──────────┘
+                  ▼
+┌────────────────────────────────────┐
+│ PostgreSQL audit_logs               │
+│ Risk, Action, Policy, Cost, User,   │
+│ Department, Tokens, Savings         │
+└────────────────────────────────────┘
 
 ## Tech Stack
 
