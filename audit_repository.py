@@ -1,3 +1,5 @@
+from collections import Counter
+
 from sqlalchemy.orm import Session
 
 from db_models import AuditLog
@@ -29,8 +31,6 @@ def save_audit_log(
     db.refresh(audit_log)
 
     return audit_log
-
-
 
 
 def get_audit_summary(db: Session) -> dict:
@@ -93,3 +93,50 @@ def get_audit_summary(db: Session) -> dict:
         "warning_count": warning_count,
         "recent_logs": recent_log_items,
     }
+
+
+def get_department_summary(db: Session) -> dict:
+    logs = db.query(AuditLog).all()
+
+    department_data = {}
+
+    for log in logs:
+        department = log.department or "Unknown"
+
+        if department not in department_data:
+            department_data[department] = {
+                "department": department,
+                "total_requests": 0,
+                "blocked_count": 0,
+                "critical_count": 0,
+                "risk_reasons_counter": Counter(),
+            }
+
+        department_data[department]["total_requests"] += 1
+
+        if log.action == "BLOCK":
+            department_data[department]["blocked_count"] += 1
+
+        if log.risk_level == "CRITICAL":
+            department_data[department]["critical_count"] += 1
+
+        if log.risk_reasons:
+            reasons = [reason.strip() for reason in log.risk_reasons.split(",")]
+            department_data[department]["risk_reasons_counter"].update(reasons)
+
+    departments = []
+
+    for data in department_data.values():
+        departments.append(
+            {
+                "department": data["department"],
+                "total_requests": data["total_requests"],
+                "blocked_count": data["blocked_count"],
+                "critical_count": data["critical_count"],
+                "top_risk_reasons": dict(
+                    data["risk_reasons_counter"].most_common(5)
+                ),
+            }
+        )
+
+    return {"departments": departments}

@@ -313,6 +313,7 @@ Status code:
 
 This prevents unauthorized clients from creating audit records or viewing PostgreSQL-backed audit summaries.
 
+* Department-level usage analytics with total requests, blocked prompts, critical risks, and top risk reasons.
 
 ## GET `/`
 

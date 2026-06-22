@@ -8,7 +8,11 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from auth import verify_api_key
-from audit_repository import get_audit_summary, save_audit_log
+from audit_repository import (
+    get_audit_summary,
+    get_department_summary,
+    save_audit_log,
+)
 from database import get_db
 
 from audit_logger import AuditLogger
@@ -106,6 +110,14 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
 )
 def audit_summary(db: Session = Depends(get_db)):
     return get_audit_summary(db)
+
+
+@app.get(
+    "/department-summary",
+    dependencies=[Depends(verify_api_key)],
+)
+def department_summary(db: Session = Depends(get_db)):
+    return get_department_summary(db)
 
 
 @app.get("/health/db")

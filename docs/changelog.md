@@ -1,5 +1,23 @@
 # Changelog
 
+## Version 4.2 - Department Usage Summary
+
+### Added
+* Added `/department-summary` endpoint to return department-level usage analytics.
+* Added total request count by department.
+* Added blocked prompt count by department.
+* Added critical risk count by department.
+* Added top risk reasons by department.
+* Added pytest coverage for department summary aggregation logic.
+
+### Validation
+* Verified `/department-summary` returns `200 OK` in Swagger.
+* Verified response includes department names, total requests, blocked count, critical count, and top risk reasons.
+* Confirmed test suite passes with `51 passed`.
+
+### Outcome
+GuardRail AI now converts raw audit logs into department-level governance analytics, helping organizations identify which business units are creating the most AI risk.
+
 ## Version 4.1 - Department and User Metadata
 
 ### Added
