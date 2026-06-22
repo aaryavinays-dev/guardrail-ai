@@ -33,3 +33,18 @@ class RiskResponse(BaseModel):
     estimated_tokens: int
     estimated_cost: float
     blocked_cost_savings: float
+
+class GatewayResponse(BaseModel):
+    redacted_prompt: str
+    detections: dict[str, bool]
+    risk_level: str
+    risk_score: int
+    action: str
+    risk_reasons: list[str]
+    user_id: str
+    department: str
+    estimated_tokens: int
+    estimated_cost: float
+    blocked_cost_savings: float
+    ai_response: str | None
+    model_called: bool

@@ -1,5 +1,25 @@
 # Changelog
 
+## Version 4.6 - OpenAI Gateway
+
+### Added
+* Added `/gateway` endpoint to evaluate prompts before model invocation.
+* Added gateway logic to block unsafe prompts before calling an external AI model.
+* Added OpenAI provider integration for safe prompts.
+* Added provider failure handling so quota, billing, or configuration issues return a controlled API response instead of crashing the backend.
+* Added `model_called` and `ai_response` fields to gateway responses.
+
+### Validation
+* Verified blocked Finance prompt with SSN returns `action = BLOCK`.
+* Verified blocked prompt returns `model_called = false`.
+* Verified blocked prompt does not call the OpenAI model.
+* Verified safe prompt passes GuardRail checks.
+* Verified OpenAI provider quota issue is handled gracefully with `200 OK`.
+* Verified gateway logs are stored in `/audit-summary`.
+* Confirmed test suite passes with `54 passed`.
+
+### Outcome
+GuardRail AI now functions as an AI gateway: unsafe prompts are blocked before reaching an external model, while safe prompts can be routed to an AI provider with graceful fallback handling.
 ## Version 4.5 - Department-Specific Policy Engine
 
 ### Added

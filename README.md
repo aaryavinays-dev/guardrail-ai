@@ -317,6 +317,8 @@ This prevents unauthorized clients from creating audit records or viewing Postgr
 * Token and cost tracking for AI prompt analysis, including estimated token usage and estimated cost per request.
 * Blocked cost savings tracking to estimate AI spend prevented by blocking unsafe prompts.
 * Department-specific policy engine that applies custom AI governance rules by business unit.
+* OpenAI gateway endpoint that blocks unsafe prompts before model invocation and routes safe prompts to an AI provider.
+* Provider failure handling for quota, billing, or configuration issues.
 
 ## GET `/`
 
