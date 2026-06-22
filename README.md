@@ -320,6 +320,7 @@ This prevents unauthorized clients from creating audit records or viewing Postgr
 * OpenAI gateway endpoint that blocks unsafe prompts before model invocation and routes safe prompts to an AI provider.
 * Provider failure handling for quota, billing, or configuration issues.
 * Model routing for the AI gateway, sending safe short prompts to a faster model and longer prompts to a stronger model.
+* Evaluation harness with 28 test cases and category-level accuracy reporting across safe prompts, PII, secrets, prompt injection, and mixed-risk scenarios.
 ## GET `/`
 
 Basic home endpoint.

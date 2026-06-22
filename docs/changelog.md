@@ -1,5 +1,23 @@
 # Changelog
 
+## Version 4.8 - Evaluation Harness
+
+### Added
+* Added evaluation harness under `evaluation/run_eval.py`.
+* Added 28 evaluation cases across safe prompts, emails, phones, SSNs, credit cards, passwords, API keys, prompt injection, and mixed-risk prompts.
+* Added category-level evaluation reporting.
+* Added automated comparison between expected GuardRail action and actual system action.
+* Added failed-case reporting for debugging policy or detector gaps.
+
+### Validation
+* Verified evaluation harness runs successfully.
+* Verified all 28 evaluation cases passed.
+* Verified evaluation report shows `100.0%` accuracy.
+* Confirmed test suite passes with `54 passed`.
+
+### Outcome
+GuardRail AI now includes a stronger evaluation harness that validates guardrail behavior across multiple prompt-risk categories and provides category-level accuracy reporting for demo and interview credibility.
+
 ## Version 4.7 - Model Routing
 
 ### Added
