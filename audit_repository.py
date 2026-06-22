@@ -14,6 +14,8 @@ def save_audit_log(
     risk_reasons: list[str],
     user_id: str,
     department: str,
+    estimated_tokens: int,
+    estimated_cost: float,
 ) -> AuditLog:
     audit_log = AuditLog(
         redacted_prompt=redacted_prompt,
@@ -24,6 +26,8 @@ def save_audit_log(
         prompt_redacted=True,
         user_id=user_id,
         department=department,
+        estimated_tokens=estimated_tokens,
+        estimated_cost=estimated_cost,
     )
 
     db.add(audit_log)
@@ -82,6 +86,8 @@ def get_audit_summary(db: Session) -> dict:
                 "prompt_redacted": log.prompt_redacted,
                 "user_id": log.user_id,
                 "department": log.department,
+                "estimated_tokens": log.estimated_tokens,
+                "estimated_cost": log.estimated_cost,
             }
         )
 

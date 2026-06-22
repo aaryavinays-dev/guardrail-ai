@@ -17,16 +17,18 @@ class PromptRequest(BaseModel):
         min_length=1,
         description="Department or business unit submitting the prompt.",
     )
+    
 
 class RiskResponse(BaseModel):
     redacted_prompt: str
     detections: dict[str, bool]
     word_count: int
     character_count: int
-    estimated_tokens: int
     risk_level: str
     risk_score: int
     action: str
     risk_reasons: list[str]
     user_id: str
     department: str 
+    estimated_tokens: int
+    estimated_cost: float

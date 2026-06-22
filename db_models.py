@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, text
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, text
 from sqlalchemy.sql import func
 
 from database import Base
@@ -11,9 +11,12 @@ class AuditLog(Base):
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     redacted_prompt = Column(Text, nullable=False)
     risk_score = Column(Integer, nullable=False)
+    estimated_tokens = Column(Integer, nullable=False, default=0)
+    estimated_cost = Column(Float, nullable=False, default=0.0)
     risk_level = Column(String(20), nullable=False)
     action = Column(String(20), nullable=False)
     risk_reasons = Column(Text, nullable=False)
     prompt_redacted = Column(Boolean, server_default=text("true"), nullable=False)
     user_id = Column(String(50), nullable=False)
     department = Column(String(100), nullable=False)
+    

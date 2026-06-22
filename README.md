@@ -314,6 +314,7 @@ Status code:
 This prevents unauthorized clients from creating audit records or viewing PostgreSQL-backed audit summaries.
 
 * Department-level usage analytics with total requests, blocked prompts, critical risks, and top risk reasons.
+* Token and cost tracking for AI prompt analysis, including estimated token usage and estimated cost per request.
 
 ## GET `/`
 

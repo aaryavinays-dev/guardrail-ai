@@ -69,6 +69,8 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
     word_count = len(prompt.split())
     character_count = len(prompt)
     estimated_tokens = int(word_count * 1.3)
+    cost_per_token = 0.000002
+    estimated_cost = round(estimated_tokens * cost_per_token, 6)
 
     detections = prompt_analyzer.analyze(prompt)
     risk_score, risk_reasons = risk_scorer.calculate_score(detections)
@@ -87,6 +89,8 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         risk_reasons=risk_reasons,
         user_id=request.user_id,
         department=request.department,
+        estimated_tokens=estimated_tokens,
+        estimated_cost=estimated_cost,
     )
 
     return RiskResponse(
@@ -94,12 +98,13 @@ def analyze_prompt(request: PromptRequest, db: Session = Depends(get_db)):
         detections=detections,
         word_count=word_count,
         character_count=character_count,
-        estimated_tokens=estimated_tokens,
         risk_level=risk_level.value,
         risk_score=risk_score,
         action=action.value,
         risk_reasons=risk_reasons,
         user_id=request.user_id,
+        estimated_tokens=estimated_tokens,
+        estimated_cost=estimated_cost,
         department=request.department,
     )
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 4.3 - Token and Cost Tracking
+
+### Added
+* Added estimated token tracking for each `/analyze` request.
+* Added estimated cost calculation using a configurable-style cost-per-token baseline.
+* Added `estimated_tokens` and `estimated_cost` columns to PostgreSQL audit logs.
+* Updated `/analyze` response to return estimated token and cost values.
+* Updated `/audit-summary` to include estimated token and cost values in recent audit logs.
+
+### Validation
+* Verified `/analyze` returns `estimated_tokens` and `estimated_cost`.
+* Verified `/audit-summary` returns stored token and cost values from PostgreSQL.
+* Confirmed test suite passes with `51 passed`.
+
+### Outcome
+GuardRail AI now tracks estimated AI usage and cost per prompt, creating the foundation for department-level cost analytics, blocked cost savings, and model routing.
 ## Version 4.2 - Department Usage Summary
 
 ### Added
