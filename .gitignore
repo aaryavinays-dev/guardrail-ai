@@ -5,3 +5,5 @@ __pycache__/
 logs/
 .env
 audit_log.json
+frontend/node_modules/
+frontend/dist/
