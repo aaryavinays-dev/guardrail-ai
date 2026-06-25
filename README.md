@@ -2,26 +2,36 @@
 
 ## Enterprise AI Governance Gateway for Prompt Security, Policy Enforcement, Cost Tracking, and Model Routing
 
-GuardRail AI is a FastAPI-based enterprise AI governance gateway that analyzes user prompts before model invocation. It detects sensitive data and prompt injection attempts, redacts unsafe values, applies risk scoring and department-specific policies, tracks token and cost usage, estimates blocked cost savings, routes safe prompts to AI models, and stores structured audit logs in PostgreSQL.
+GuardRail AI is a full-stack enterprise AI governance gateway that analyzes prompts before AI model invocation. It detects sensitive data and prompt injection attempts, redacts unsafe values, applies risk scoring and department-specific policies, tracks token and cost usage, estimates blocked cost savings, routes safe prompts to AI models, and stores structured audit logs in PostgreSQL.
 
-This project is designed to simulate how modern organizations can govern Generative AI usage before prompts reach external AI providers such as OpenAI, Claude, Gemini, Copilot, AWS Bedrock, Azure OpenAI, or self-hosted LLMs.
+The project includes a FastAPI backend, PostgreSQL audit layer, AI gateway endpoint, evaluation harness, automated test suite, and a React + TypeScript dashboard for governance visibility.
+
+GuardRail AI is designed to simulate how modern organizations can govern Generative AI usage before prompts reach external providers such as OpenAI, Claude, Gemini, Copilot, AWS Bedrock, Azure OpenAI, or self-hosted LLMs.
 
 ---
 
-## Project Summary
+## Executive Summary
 
-Organizations are rapidly adopting Generative AI across departments, but user prompts often flow directly into external AI systems without inspection, logging, redaction, or governance.
+Organizations are adopting Generative AI across Finance, HR, Engineering, Legal, Support, and Operations teams. However, prompts often flow directly into external AI systems without inspection, redaction, logging, policy enforcement, or cost visibility.
 
-GuardRail AI solves this by acting as a protective gateway between users and AI models.
+This creates real enterprise risks:
+
+* Sensitive data may be pasted into prompts.
+* Credentials and API keys may leak into external systems.
+* Prompt injection can attempt to manipulate model behavior.
+* Departments may need different AI usage policies.
+* AI usage and cost may grow without visibility.
+* Audit teams may not know who submitted risky prompts.
+* Unsafe prompts may reach model providers before review.
+
+GuardRail AI solves this by acting as a protective governance layer between users and AI models.
 
 ```text
 User Prompt
     ↓
 GuardRail AI Gateway
     ↓
-Sensitive Data Detection
-    ↓
-Prompt Injection Detection
+Sensitive Data + Prompt Injection Detection
     ↓
 Risk Scoring
     ↓
@@ -34,71 +44,76 @@ Redaction + Audit Logging
 Model Routing or Blocked Response
 ```
 
-If a prompt is unsafe, GuardRail AI blocks it before model invocation. If it is safe, the gateway can route it to an AI model while tracking cost, usage, and audit metadata.
+If a prompt is unsafe, GuardRail AI blocks it before model invocation. If it is safe, the gateway can route it to an AI model while tracking usage, cost, department, user metadata, and audit history.
 
 ---
 
-## Core Capabilities
+## Project Highlights
 
-| Category          | Capability                                                                                            |
-| ----------------- | ----------------------------------------------------------------------------------------------------- |
-| Prompt Security   | Detects emails, SSNs, phone numbers, credit cards, passwords, API keys, and prompt injection attempts |
-| Governance        | Applies ALLOW, WARN, and BLOCK decisions based on risk score and policy rules                         |
-| Redaction         | Redacts sensitive values before returning responses or storing audit logs                             |
-| Auditability      | Stores structured audit records in PostgreSQL                                                         |
-| API Security      | Protects governance endpoints using API key authentication                                            |
-| Metadata Tracking | Captures user ID and department for every request                                                     |
-| Analytics         | Provides audit summaries and department-level usage summaries                                         |
-| Cost Visibility   | Tracks estimated tokens and estimated cost per request                                                |
-| ROI Reporting     | Estimates blocked cost savings when unsafe prompts are blocked                                        |
-| Policy Engine     | Applies department-specific AI governance rules                                                       |
-| AI Gateway        | Blocks unsafe prompts before external model calls                                                     |
-| Provider Handling | Handles OpenAI provider quota, billing, or configuration failures gracefully                          |
-| Model Routing     | Routes safe short prompts to a fast model and longer prompts to a stronger model                      |
-| Evaluation        | Includes a 28-case evaluation harness with category-level accuracy reporting                          |
-| Testing           | Includes 54 passing pytest tests                                                                      |
+| Area            | Result                                                |
+| --------------- | ----------------------------------------------------- |
+| Backend API     | FastAPI governance gateway                            |
+| Frontend        | React + TypeScript dashboard                          |
+| Database        | PostgreSQL audit logging                              |
+| Security        | API key protected endpoints                           |
+| Detection       | PII, secrets, and prompt injection detection          |
+| Governance      | ALLOW / WARN / BLOCK decision engine                  |
+| Policy          | Department-specific policy enforcement                |
+| Redaction       | Sensitive values redacted before response and storage |
+| AI Gateway      | Blocks unsafe prompts before model calls              |
+| Model Routing   | Routes safe prompts to fast or strong models          |
+| Cost Visibility | Tracks estimated tokens and cost                      |
+| ROI Signal      | Estimates blocked cost savings                        |
+| Evaluation      | 28/28 evaluation cases passed                         |
+| Testing         | 54 passing pytest tests                               |
 
 ---
 
 ## Current Version
 
-| Field              | Value                                                          |
-| ------------------ | -------------------------------------------------------------- |
-| Version            | v4.8                                                           |
-| Phase              | Backend Phase 1 Complete                                       |
-| Current Milestone  | Enterprise AI Governance Gateway                               |
-| Test Suite         | 54 passing tests                                               |
-| Evaluation Harness | 28 cases, 100% pass rate                                       |
-| Database           | PostgreSQL                                                     |
-| API Framework      | FastAPI                                                        |
-| Primary Focus      | AI governance, prompt security, model gateway, cost visibility |
+| Field               | Value                                                                        |
+| ------------------- | ---------------------------------------------------------------------------- |
+| Version             | `v5.4`                                                                       |
+| Phase               | Full-Stack MVP Complete                                                      |
+| Current Milestone   | Enterprise AI Governance Gateway with React Dashboard                        |
+| Backend Test Suite  | `54 passed`                                                                  |
+| Evaluation Harness  | `28/28 cases passed`                                                         |
+| Evaluation Accuracy | `100.0%`                                                                     |
+| Backend Stack       | FastAPI, PostgreSQL, SQLAlchemy, Pydantic, Pytest                            |
+| Frontend Stack      | React, TypeScript, Vite                                                      |
+| Primary Focus       | AI governance, prompt security, auditability, model gateway, cost visibility |
 
 ---
 
-## Why This Project Matters
+## Core Capabilities
 
-Generative AI creates new enterprise risks:
-
-* Sensitive data can be pasted into prompts.
-* Credentials and API keys can leak into external systems.
-* Prompt injection can manipulate model behavior.
-* Organizations lack visibility into AI usage by department.
-* AI costs can grow without tracking.
-* Unsafe prompts may reach external providers before review.
-* Governance policies may differ across Finance, HR, Engineering, Legal, and Support teams.
-
-GuardRail AI demonstrates how an enterprise backend can add a governance layer before model invocation.
+| Category           | Capability                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| Prompt Security    | Detects emails, SSNs, phone numbers, credit cards, passwords, API keys, and prompt injection attempts |
+| Governance         | Applies `ALLOW`, `WARN`, and `BLOCK` decisions based on risk score and policy rules                   |
+| Redaction          | Redacts sensitive values before returning responses or storing audit logs                             |
+| Auditability       | Stores structured audit records in PostgreSQL                                                         |
+| API Security       | Protects governance endpoints using API key authentication                                            |
+| Metadata Tracking  | Captures user ID and department for every request                                                     |
+| Analytics          | Provides audit summaries and department-level usage summaries                                         |
+| Cost Visibility    | Tracks estimated tokens and estimated cost per request                                                |
+| ROI Reporting      | Estimates blocked cost savings when unsafe prompts are blocked                                        |
+| Policy Engine      | Applies department-specific AI governance rules                                                       |
+| AI Gateway         | Blocks unsafe prompts before external model calls                                                     |
+| Provider Handling  | Handles provider quota, billing, or configuration failures gracefully                                 |
+| Model Routing      | Routes safe short prompts to a fast model and longer prompts to a stronger model                      |
+| Evaluation         | Includes a 28-case evaluation harness with category-level reporting                                   |
+| Testing            | Includes 54 passing backend tests                                                                     |
+| Frontend Dashboard | Provides UI for prompt analysis, gateway demo, department analytics, and audit summaries              |
 
 ---
-
-## System Architecture
 
 ## System Architecture
 
 ```text
 ┌────────────────────────────────────┐
-│ API Client                          │
-│ Swagger UI / Frontend / Internal App│
+│ React + TypeScript Dashboard        │
+│ Prompt Analyzer / Gateway / Reports │
 └──────────────────┬─────────────────┘
                    │
                    ▼
@@ -156,7 +171,7 @@ GuardRail AI demonstrates how an enterprise backend can add a governance layer b
        │                     │
        ▼                     ▼
 ┌──────────────┐  ┌────────────────────┐
-│ Redaction    │  │ OpenAI Provider     │
+│ Redaction    │  │ AI Provider Call    │
 │ Audit Record │  │ Fallback Handling   │
 └──────┬───────┘  └──────────┬─────────┘
        │                     │
@@ -167,21 +182,60 @@ GuardRail AI demonstrates how an enterprise backend can add a governance layer b
 │ Risk, Action, Policy, Cost, User,   │
 │ Department, Tokens, Savings         │
 └────────────────────────────────────┘
+```
+
+---
 
 ## Tech Stack
 
-| Layer          | Tools                                                     |
-| -------------- | --------------------------------------------------------- |
-| Backend        | Python, FastAPI, Uvicorn                                  |
-| Validation     | Pydantic                                                  |
-| Security Logic | Regex detectors, prompt injection patterns, policy engine |
-| AI Gateway     | OpenAI Python SDK, provider fallback handling             |
-| Database       | PostgreSQL                                                |
-| ORM            | SQLAlchemy                                                |
-| Testing        | Pytest                                                    |
-| Configuration  | python-dotenv, environment variables                      |
-| API Docs       | Swagger / OpenAPI                                         |
-| Development    | Git, GitHub, VS Code                                      |
+| Layer         | Tools                                         |
+| ------------- | --------------------------------------------- |
+| Frontend      | React, TypeScript, Vite, CSS                  |
+| Backend       | Python, FastAPI, Uvicorn                      |
+| Validation    | Pydantic                                      |
+| Database      | PostgreSQL                                    |
+| ORM           | SQLAlchemy                                    |
+| Security      | API key authentication                        |
+| AI Gateway    | OpenAI Python SDK, provider fallback handling |
+| Testing       | Pytest                                        |
+| Evaluation    | Custom 28-case evaluation harness             |
+| Configuration | python-dotenv, environment variables          |
+| API Docs      | Swagger / OpenAPI                             |
+| Development   | Git, GitHub, VS Code                          |
+
+---
+
+## Frontend Dashboard
+
+GuardRail AI includes a React + TypeScript dashboard built with Vite.
+
+The frontend is intentionally designed as an internal governance dashboard rather than a consumer SaaS UI. Its purpose is to demonstrate how enterprise teams can analyze prompts, enforce policies, monitor department-level risk, and review audit logs before or after model invocation.
+
+### Frontend Features
+
+* Prompt Analyzer connected to `POST /analyze`
+* Gateway Demo connected to `POST /gateway`
+* Department Summary connected to `GET /department-summary`
+* Audit Summary connected to `GET /audit-summary`
+* Top governance metrics for total logs, blocked prompts, warnings, critical risks, estimated cost, and blocked savings
+* Loading states and error states
+* Cost formatting
+* Redacted prompt display
+* Detection labels
+* Recent audit log table
+
+### Dashboard Proof Points
+
+The dashboard demonstrates:
+
+* A risky prompt being blocked before model invocation
+* Sensitive values being redacted
+* Department policy overriding risk-based action
+* Safe prompts flowing through the gateway
+* Model routing metadata
+* Audit summaries from PostgreSQL
+* Department-level risk visibility
+* Cost tracking and blocked cost savings
 
 ---
 
@@ -232,7 +286,7 @@ GuardRail AI demonstrates how an enterprise backend can add a governance layer b
 | 21-99       | WARN   |
 | 100+        | BLOCK  |
 
-The risk-based action can be overridden by the department-specific policy engine.
+The initial risk-based action can be overridden by the department-specific policy engine.
 
 ---
 
@@ -290,7 +344,7 @@ OPENAI_FAST_MODEL=gpt-4.1-mini
 OPENAI_STRONG_MODEL=gpt-4.1
 ```
 
-This design can later be extended to route across OpenAI, Claude, Gemini, AWS Bedrock, Azure OpenAI, or self-hosted Llama models.
+The design can later be extended to route across OpenAI, Claude, Gemini, AWS Bedrock, Azure OpenAI, or self-hosted Llama models.
 
 ---
 
@@ -365,8 +419,6 @@ x-api-key: guardrail-local-dev-key
     "api_key": false,
     "prompt_injection": false
   },
-  "word_count": 9,
-  "character_count": 61,
   "estimated_tokens": 11,
   "estimated_cost": 0.000022,
   "blocked_cost_savings": 0.000022,
@@ -602,10 +654,12 @@ Test coverage includes:
 * Department metadata validation
 * Department summary aggregation
 * Department-specific policy rules
+* Gateway behavior
+* Model routing behavior
 
 ---
 
-## Screenshots and Demo Proof
+## Screenshots
 
 Screenshots are organized under:
 
@@ -613,30 +667,18 @@ Screenshots are organized under:
 screenshots/
 ```
 
-Recommended screenshot folders:
+Recommended screenshots:
 
-```text
-screenshots/api_authentication/
-screenshots/department_metadata/
-screenshots/department_summary/
-screenshots/token_cost_tracking/
-screenshots/blocked_cost_savings/
-screenshots/policy_engine/
-screenshots/openai_gateway/
-screenshots/model_routing/
-screenshots/evaluation_harness/
-```
-
-Key proof points:
-
-* `/analyze` detects and redacts sensitive data
-* `/audit-summary` stores PostgreSQL audit logs
-* `/department-summary` returns department analytics
-* `/gateway` blocks unsafe prompts before model calls
-* `/gateway` routes safe prompts to selected models
-* Provider failure handling returns controlled responses
-* Evaluation harness reports 28/28 passing cases
-* Pytest reports 54 passing tests
+| Screenshot                         | What It Proves                                          |
+| ---------------------------------- | ------------------------------------------------------- |
+| `frontend-dashboard-overview.png`  | Full React dashboard with top governance metrics        |
+| `prompt-analyzer-block-result.png` | Sensitive data detection, redaction, and BLOCK decision |
+| `gateway-allow-result.png`         | Safe prompt gateway flow and model selection            |
+| `gateway-block-result.png`         | Blocked prompt prevented before model invocation        |
+| `department-summary.png`           | Department-level governance analytics                   |
+| `audit-summary.png`                | Audit traceability, cost tracking, and blocked savings  |
+| `evaluation-harness.png`           | 28/28 evaluation result                                 |
+| `pytest-results.png`               | 54 passing backend tests                                |
 
 ---
 
@@ -664,24 +706,38 @@ guardrail-ai/
 ├── .env.example
 ├── .gitignore
 │
+├── frontend/
+│   ├── README.md
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── src/
+│       ├── App.tsx
+│       ├── App.css
+│       ├── main.tsx
+│       └── index.css
+│
 ├── evaluation/
 │   └── run_eval.py
 │
 ├── docs/
 │   ├── architecture_v1.md
 │   ├── changelog.md
+│   ├── demo_payloads.md
+│   ├── demo_script.md
+│   ├── frontend_notes.md
+│   ├── screenshots_index.md
 │   └── sql/
 │       └── 001_add_user_department_metadata.sql
 │
 ├── screenshots/
-│   ├── department_metadata/
-│   ├── department_summary/
-│   ├── token_cost_tracking/
-│   ├── blocked_cost_savings/
-│   ├── policy_engine/
-│   ├── openai_gateway/
-│   ├── model_routing/
-│   └── evaluation_harness/
+│   ├── frontend-dashboard-overview.png
+│   ├── prompt-analyzer-block-result.png
+│   ├── gateway-allow-result.png
+│   ├── gateway-block-result.png
+│   ├── department-summary.png
+│   ├── audit-summary.png
+│   ├── evaluation-harness.png
+│   └── pytest-results.png
 │
 ├── tests/
 │   ├── test_auth.py
@@ -700,14 +756,14 @@ guardrail-ai/
 
 ## Local Setup
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/aaryavinays-dev/guardrail-ai.git
 cd guardrail-ai
 ```
 
-### 2. Create virtual environment
+### 2. Create Virtual Environment
 
 ```bash
 python -m venv venv
@@ -725,19 +781,19 @@ Activate on macOS/Linux:
 source venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Install Backend Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Configure Environment Variables
 
-Create a `.env` file:
+Create a `.env` file in the project root:
 
 ```env
 APP_NAME=GuardRail AI
-APP_VERSION=4.8
+APP_VERSION=5.4
 RISK_THRESHOLD=100
 AUDIT_LOG_FILE=logs/audit_log.json
 
@@ -757,22 +813,44 @@ Do not commit your real `.env`.
 
 Ensure PostgreSQL is running and the `guardrail_ai` database exists.
 
-### 6. Start the backend
+### 6. Start the Backend
 
 ```bash
 uvicorn main:app --reload
 ```
 
-### 7. Open Swagger UI
+Backend runs at:
+
+```text
+http://127.0.0.1:8000
+```
+
+Swagger UI:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-Authorize protected endpoints using:
+Protected endpoints require:
 
 ```text
 x-api-key: guardrail-local-dev-key
+```
+
+### 7. Start the Frontend
+
+Open a new terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend runs at:
+
+```text
+http://localhost:5173
 ```
 
 ---
@@ -805,6 +883,8 @@ __pycache__/
 .pytest_cache/
 logs/
 *.pyc
+frontend/node_modules/
+frontend/dist/
 ```
 
 ---
@@ -831,6 +911,11 @@ logs/
 * Evaluation harness design
 * Unit testing with pytest
 * Swagger/OpenAPI testing
+* React controlled inputs
+* TypeScript response typing
+* Frontend API integration with `fetch`
+* Loading and error states
+* Full-stack product delivery
 * Git-based feature delivery
 
 ---
@@ -852,22 +937,27 @@ Completed:
 * Token and cost tracking
 * Blocked cost savings
 * Department-specific policy engine
-* OpenAI gateway
+* AI gateway endpoint
 * Provider failure handling
 * Model routing
 * 28-case evaluation harness
 * 54 passing tests
 
-### Phase 2: Frontend Dashboard
+### Phase 2: Frontend Governance Dashboard
 
-Planned:
+Completed:
 
-* React or Next.js dashboard
-* Department analytics charts
-* Risk trend charts
-* Blocked prompt analytics
-* Cost savings dashboard
-* Audit log viewer
+* React + TypeScript dashboard
+* Prompt Analyzer UI
+* Gateway Demo UI
+* Department Summary UI
+* Audit Summary UI
+* Top governance metrics
+* Cost and blocked savings cards
+* Loading states
+* Error states
+* Detection labels
+* Cost formatting
 
 ### Phase 3: Cloud and DevOps
 
@@ -892,8 +982,6 @@ Planned:
 
 ---
 
----
-
 ## Long-Term Vision
 
 GuardRail AI is designed as the foundation for a provider-agnostic enterprise AI gateway that can help organizations:
@@ -906,3 +994,26 @@ GuardRail AI is designed as the foundation for a provider-agnostic enterprise AI
 * Estimate governance ROI through blocked cost savings
 * Route requests across different AI models and providers
 * Support compliance, security, and AI platform engineering teams
+
+The long-term vision is to evolve GuardRail AI into an AI platform control layer that sits between enterprise users, internal applications, and multiple LLM providers.
+
+---
+
+## Project Status
+
+| Area                     | Status       |
+| ------------------------ | ------------ |
+| Backend API              | Complete     |
+| Prompt analysis          | Complete     |
+| Redaction                | Complete     |
+| Policy engine            | Complete     |
+| PostgreSQL audit logging | Complete     |
+| Token/cost tracking      | Complete     |
+| Blocked savings          | Complete     |
+| AI gateway               | Complete     |
+| Model routing            | Complete     |
+| Evaluation harness       | Complete     |
+| Automated tests          | Complete     |
+| React dashboard          | Complete     |
+| Frontend polish          | Complete     |
+| Deployment               | Planned next |
