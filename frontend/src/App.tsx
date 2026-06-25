@@ -49,6 +49,33 @@ type DepartmentSummaryRow = {
   top_risk_reasons?: string[] | Record<string, number>;
 };
 
+type RecentAuditLog = {
+  id?: number;
+  user_id?: string;
+  department?: string;
+  action?: string;
+  risk_score?: number;
+  risk_level?: string;
+  redacted_prompt?: string;
+  estimated_cost?: number;
+  blocked_cost_savings?: number;
+  created_at?: string;
+  timestamp?: string;
+};
+
+type AuditSummary = {
+  total_logs?: number;
+  total_requests?: number;
+  blocked_count?: number;
+  warning_count?: number;
+  warn_count?: number;
+  critical_count?: number;
+  total_estimated_cost?: number;
+  total_blocked_savings?: number;
+  recent_logs?: RecentAuditLog[];
+  logs?: RecentAuditLog[];
+};
+
 function App() {
   const [userId, setUserId] = useState("user_101");
   const [department, setDepartment] = useState("Finance");
@@ -70,6 +97,10 @@ function App() {
   >([]);
   const [isDepartmentLoading, setIsDepartmentLoading] = useState(false);
   const [departmentError, setDepartmentError] = useState("");
+
+  const [auditSummary, setAuditSummary] = useState<AuditSummary | null>(null);
+  const [isAuditLoading, setIsAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState("");
 
   async function handleAnalyze() {
     setIsLoading(true);
@@ -168,6 +199,33 @@ function App() {
       );
     } finally {
       setIsDepartmentLoading(false);
+    }
+  }
+
+  async function handleLoadAuditSummary() {
+    setIsAuditLoading(true);
+    setAuditError("");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/audit-summary", {
+        method: "GET",
+        headers: {
+          "x-api-key": "guardrail-local-dev-key",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Audit summary request failed");
+      }
+
+      const data: AuditSummary = await response.json();
+      setAuditSummary(data);
+    } catch (error) {
+      setAuditError(
+        "Could not load audit summary. Make sure FastAPI is running on port 8000."
+      );
+    } finally {
+      setIsAuditLoading(false);
     }
   }
 
@@ -442,6 +500,117 @@ function App() {
               <div className="placeholder summary-placeholder">
                 Load department summary to view enterprise AI governance
                 metrics.
+              </div>
+            )
+          )}
+        </div>
+      </section>
+
+      <section className="wide-card">
+        <div className="card">
+          <h2>Audit Summary</h2>
+          <p className="section-note">
+            Review audit-level governance metrics, recent prompt decisions, cost
+            tracking, and blocked cost savings.
+          </p>
+
+          <button
+            type="button"
+            onClick={handleLoadAuditSummary}
+            disabled={isAuditLoading}
+          >
+            {isAuditLoading
+              ? "Loading Audit Summary..."
+              : "Load Audit Summary"}
+          </button>
+
+          {auditError && <div className="error-box">{auditError}</div>}
+
+          {auditSummary ? (
+            <div className="audit-section">
+              <div className="metric-grid">
+                <div className="metric-card">
+                  <span>Total Logs</span>
+                  <strong>
+                    {auditSummary.total_logs ?? auditSummary.total_requests ?? 0}
+                  </strong>
+                </div>
+
+                <div className="metric-card">
+                  <span>Blocked</span>
+                  <strong>{auditSummary.blocked_count ?? 0}</strong>
+                </div>
+
+                <div className="metric-card">
+                  <span>Warnings</span>
+                  <strong>
+                    {auditSummary.warning_count ?? auditSummary.warn_count ?? 0}
+                  </strong>
+                </div>
+
+                <div className="metric-card">
+                  <span>Critical</span>
+                  <strong>{auditSummary.critical_count ?? 0}</strong>
+                </div>
+
+                <div className="metric-card">
+                  <span>Total Estimated Cost</span>
+                  <strong>{auditSummary.total_estimated_cost ?? "N/A"}</strong>
+                </div>
+
+                <div className="metric-card">
+                  <span>Total Blocked Savings</span>
+                  <strong>{auditSummary.total_blocked_savings ?? "N/A"}</strong>
+                </div>
+              </div>
+
+              <h3>Recent Audit Logs</h3>
+
+              {(auditSummary.recent_logs || auditSummary.logs || []).length >
+              0 ? (
+                <div className="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th>Department</th>
+                        <th>Action</th>
+                        <th>Risk</th>
+                        <th>Cost</th>
+                        <th>Blocked Savings</th>
+                        <th>Redacted Prompt</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(auditSummary.recent_logs || auditSummary.logs || []).map(
+                        (log, index) => (
+                          <tr key={log.id ?? index}>
+                            <td>{log.user_id || "N/A"}</td>
+                            <td>{log.department || "N/A"}</td>
+                            <td>{log.action || "N/A"}</td>
+                            <td>
+                              {log.risk_score ?? "N/A"}{" "}
+                              {log.risk_level ? `(${log.risk_level})` : ""}
+                            </td>
+                            <td>{log.estimated_cost ?? "N/A"}</td>
+                            <td>{log.blocked_cost_savings ?? "N/A"}</td>
+                            <td>{log.redacted_prompt || "N/A"}</td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="placeholder summary-placeholder">
+                  No recent audit logs returned.
+                </div>
+              )}
+            </div>
+          ) : (
+            !auditError && (
+              <div className="placeholder summary-placeholder">
+                Load audit summary to view traceability and governance metrics.
               </div>
             )
           )}

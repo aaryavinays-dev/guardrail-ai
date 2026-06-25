@@ -62,3 +62,39 @@ tr:last-child td {
 .summary-placeholder {
   margin-top: 20px;
 }
+
+.audit-section {
+  margin-top: 24px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.metric-card {
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.metric-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.metric-card strong {
+  color: #f8fafc;
+  font-size: 24px;
+}
+
+@media (max-width: 900px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
