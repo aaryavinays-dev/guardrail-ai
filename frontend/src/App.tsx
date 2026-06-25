@@ -76,6 +76,35 @@ type AuditSummary = {
   logs?: RecentAuditLog[];
 };
 
+function formatCost(value?: number) {
+  if (typeof value !== "number") {
+    return "N/A";
+  }
+
+  return `$${value.toFixed(6)}`;
+}
+
+function formatLabel(label: string) {
+  const labelMap: Record<string, string> = {
+    ssn: "SSN",
+    email: "Email",
+    phone: "Phone",
+    credit_card: "Credit Card",
+    password: "Password",
+    api_key: "API Key",
+    prompt_injection: "Prompt Injection",
+  };
+
+  return labelMap[label] || label;
+}
+
+function sumLogValues(
+  logs: RecentAuditLog[],
+  key: "estimated_cost" | "blocked_cost_savings"
+) {
+  return logs.reduce((total, log) => total + (log[key] ?? 0), 0);
+}
+
 function App() {
   const [userId, setUserId] = useState("user_101");
   const [department, setDepartment] = useState("Finance");
@@ -102,7 +131,22 @@ function App() {
   const [isAuditLoading, setIsAuditLoading] = useState(false);
   const [auditError, setAuditError] = useState("");
 
+  const auditLogs = auditSummary?.recent_logs || auditSummary?.logs || [];
+
+  const calculatedEstimatedCost =
+    auditSummary?.total_estimated_cost ??
+    sumLogValues(auditLogs, "estimated_cost");
+
+  const calculatedBlockedSavings =
+    auditSummary?.total_blocked_savings ??
+    sumLogValues(auditLogs, "blocked_cost_savings");
+
   async function handleAnalyze() {
+    if (!prompt.trim()) {
+      setErrorMessage("Please enter a prompt before analyzing.");
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage("");
     setResult(null);
@@ -137,6 +181,11 @@ function App() {
   }
 
   async function handleGateway() {
+    if (!gatewayPrompt.trim()) {
+      setGatewayError("Please enter a gateway prompt before running the gateway.");
+      return;
+    }
+
     setIsGatewayLoading(true);
     setGatewayError("");
     setGatewayResult(null);
@@ -240,6 +289,42 @@ function App() {
         </p>
       </section>
 
+      <section className="top-metrics">
+        <div className="metric-card">
+          <span>Total Logs</span>
+          <strong>
+            {auditSummary?.total_logs ?? auditSummary?.total_requests ?? 0}
+          </strong>
+        </div>
+
+        <div className="metric-card">
+          <span>Blocked</span>
+          <strong>{auditSummary?.blocked_count ?? 0}</strong>
+        </div>
+
+        <div className="metric-card">
+          <span>Warnings</span>
+          <strong>
+            {auditSummary?.warning_count ?? auditSummary?.warn_count ?? 0}
+          </strong>
+        </div>
+
+        <div className="metric-card">
+          <span>Critical</span>
+          <strong>{auditSummary?.critical_count ?? 0}</strong>
+        </div>
+
+        <div className="metric-card">
+          <span>Estimated Cost</span>
+          <strong>{formatCost(calculatedEstimatedCost)}</strong>
+        </div>
+
+        <div className="metric-card">
+          <span>Blocked Savings</span>
+          <strong>{formatCost(calculatedBlockedSavings)}</strong>
+        </div>
+      </section>
+
       <section className="dashboard-grid">
         <div className="card">
           <h2>Prompt Analyzer</h2>
@@ -300,11 +385,11 @@ function App() {
                 </p>
                 <p>
                   <strong>Estimated Cost:</strong>{" "}
-                  {result.estimated_cost ?? "N/A"}
+                  {formatCost(result.estimated_cost)}
                 </p>
                 <p>
                   <strong>Blocked Savings:</strong>{" "}
-                  {result.blocked_cost_savings ?? "N/A"}
+                  {formatCost(result.blocked_cost_savings)}
                 </p>
               </div>
 
@@ -318,7 +403,7 @@ function App() {
                     key={key}
                     className={value ? "detection active" : "detection"}
                   >
-                    {key}: {String(value)}
+                    {formatLabel(key)}: {String(value)}
                   </span>
                 ))}
               </div>
@@ -403,11 +488,11 @@ function App() {
                 </p>
                 <p>
                   <strong>Estimated Cost:</strong>{" "}
-                  {gatewayResult.estimated_cost ?? "N/A"}
+                  {formatCost(gatewayResult.estimated_cost)}
                 </p>
                 <p>
                   <strong>Blocked Savings:</strong>{" "}
-                  {gatewayResult.blocked_cost_savings ?? "N/A"}
+                  {formatCost(gatewayResult.blocked_cost_savings)}
                 </p>
               </div>
 
@@ -555,19 +640,18 @@ function App() {
 
                 <div className="metric-card">
                   <span>Total Estimated Cost</span>
-                  <strong>{auditSummary.total_estimated_cost ?? "N/A"}</strong>
+                  <strong>{formatCost(calculatedEstimatedCost)}</strong>
                 </div>
 
                 <div className="metric-card">
                   <span>Total Blocked Savings</span>
-                  <strong>{auditSummary.total_blocked_savings ?? "N/A"}</strong>
+                  <strong>{formatCost(calculatedBlockedSavings)}</strong>
                 </div>
               </div>
 
               <h3>Recent Audit Logs</h3>
 
-              {(auditSummary.recent_logs || auditSummary.logs || []).length >
-              0 ? (
+              {auditLogs.length > 0 ? (
                 <div className="table-wrapper">
                   <table>
                     <thead>
@@ -582,22 +666,20 @@ function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {(auditSummary.recent_logs || auditSummary.logs || []).map(
-                        (log, index) => (
-                          <tr key={log.id ?? index}>
-                            <td>{log.user_id || "N/A"}</td>
-                            <td>{log.department || "N/A"}</td>
-                            <td>{log.action || "N/A"}</td>
-                            <td>
-                              {log.risk_score ?? "N/A"}{" "}
-                              {log.risk_level ? `(${log.risk_level})` : ""}
-                            </td>
-                            <td>{log.estimated_cost ?? "N/A"}</td>
-                            <td>{log.blocked_cost_savings ?? "N/A"}</td>
-                            <td>{log.redacted_prompt || "N/A"}</td>
-                          </tr>
-                        )
-                      )}
+                      {auditLogs.map((log, index) => (
+                        <tr key={log.id ?? index}>
+                          <td>{log.user_id || "N/A"}</td>
+                          <td>{log.department || "N/A"}</td>
+                          <td>{log.action || "N/A"}</td>
+                          <td>
+                            {log.risk_score ?? "N/A"}{" "}
+                            {log.risk_level ? `(${log.risk_level})` : ""}
+                          </td>
+                          <td>{formatCost(log.estimated_cost)}</td>
+                          <td>{formatCost(log.blocked_cost_savings)}</td>
+                          <td>{log.redacted_prompt || "N/A"}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
