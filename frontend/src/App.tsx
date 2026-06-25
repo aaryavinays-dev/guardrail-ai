@@ -40,6 +40,15 @@ type GatewayResult = {
   blocked_cost_savings?: number;
 };
 
+type DepartmentSummaryRow = {
+  department: string;
+  total_requests?: number;
+  request_count?: number;
+  blocked_count?: number;
+  critical_count?: number;
+  top_risk_reasons?: string[] | Record<string, number>;
+};
+
 function App() {
   const [userId, setUserId] = useState("user_101");
   const [department, setDepartment] = useState("Finance");
@@ -55,6 +64,12 @@ function App() {
   );
   const [isGatewayLoading, setIsGatewayLoading] = useState(false);
   const [gatewayError, setGatewayError] = useState("");
+
+  const [departmentSummary, setDepartmentSummary] = useState<
+    DepartmentSummaryRow[]
+  >([]);
+  const [isDepartmentLoading, setIsDepartmentLoading] = useState(false);
+  const [departmentError, setDepartmentError] = useState("");
 
   async function handleAnalyze() {
     setIsLoading(true);
@@ -124,14 +139,46 @@ function App() {
     }
   }
 
+  async function handleLoadDepartmentSummary() {
+    setIsDepartmentLoading(true);
+    setDepartmentError("");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/department-summary", {
+        method: "GET",
+        headers: {
+          "x-api-key": "guardrail-local-dev-key",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Department summary request failed");
+      }
+
+      const data = await response.json();
+
+      const rows = Array.isArray(data)
+        ? data
+        : data.departments || data.department_summary || [];
+
+      setDepartmentSummary(rows);
+    } catch (error) {
+      setDepartmentError(
+        "Could not load department summary. Make sure FastAPI is running on port 8000."
+      );
+    } finally {
+      setIsDepartmentLoading(false);
+    }
+  }
+
   return (
     <main className="app">
       <section className="hero">
         <p className="eyebrow">Enterprise AI Governance Gateway</p>
         <h1>GuardRail AI Dashboard</h1>
         <p className="subtitle">
-          Analyze prompts before model invocation, detect sensitive data,
-          apply governance policies, and view risk decisions.
+          Analyze prompts before model invocation, detect sensitive data, apply
+          governance policies, and view risk decisions.
         </p>
       </section>
 
@@ -331,6 +378,72 @@ function App() {
                 <p>No risk reasons returned.</p>
               )}
             </div>
+          )}
+        </div>
+      </section>
+
+      <section className="wide-card">
+        <div className="card">
+          <h2>Department Summary</h2>
+          <p className="section-note">
+            View department-level AI governance metrics such as total requests,
+            blocked prompts, critical risks, and top risk reasons.
+          </p>
+
+          <button
+            type="button"
+            onClick={handleLoadDepartmentSummary}
+            disabled={isDepartmentLoading}
+          >
+            {isDepartmentLoading
+              ? "Loading Summary..."
+              : "Load Department Summary"}
+          </button>
+
+          {departmentError && (
+            <div className="error-box">{departmentError}</div>
+          )}
+
+          {departmentSummary.length > 0 ? (
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Department</th>
+                    <th>Total Requests</th>
+                    <th>Blocked</th>
+                    <th>Critical</th>
+                    <th>Top Risk Reasons</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {departmentSummary.map((row) => (
+                    <tr key={row.department}>
+                      <td>{row.department}</td>
+                      <td>{row.total_requests ?? row.request_count ?? 0}</td>
+                      <td>{row.blocked_count ?? 0}</td>
+                      <td>{row.critical_count ?? 0}</td>
+                      <td>
+                        {Array.isArray(row.top_risk_reasons)
+                          ? row.top_risk_reasons.join(", ")
+                          : row.top_risk_reasons
+                          ? Object.entries(row.top_risk_reasons)
+                              .map(([reason, count]) => `${reason}: ${count}`)
+                              .join(", ")
+                          : "N/A"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            !departmentError && (
+              <div className="placeholder summary-placeholder">
+                Load department summary to view enterprise AI governance
+                metrics.
+              </div>
+            )
           )}
         </div>
       </section>

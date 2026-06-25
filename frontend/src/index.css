@@ -20,3 +20,45 @@ input,
 textarea {
   font-family: inherit;
 }
+
+.table-wrapper {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th,
+td {
+  border-bottom: 1px solid #334155;
+  padding: 14px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: #c4b5fd;
+  background: #111827;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  color: #e5e7eb;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.summary-placeholder {
+  margin-top: 20px;
+}
