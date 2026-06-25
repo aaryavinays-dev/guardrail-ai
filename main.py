@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI, HTTPException
 from openai import OpenAI, OpenAIError
 from sqlalchemy import text
@@ -57,6 +57,13 @@ RISK_THRESHOLD = get_risk_threshold()
 app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 audit_logger = AuditLogger(AUDIT_LOG_FILE)
