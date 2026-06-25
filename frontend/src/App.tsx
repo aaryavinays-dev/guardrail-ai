@@ -23,6 +23,23 @@ type AnalyzeResult = {
   blocked_cost_savings?: number;
 };
 
+type GatewayResult = {
+  action?: string;
+  risk_score?: number;
+  risk_level?: string;
+  redacted_prompt?: string;
+  detections?: Detections;
+  risk_reasons?: string[];
+  selected_model?: string;
+  model_called?: boolean;
+  ai_response?: string;
+  response?: string;
+  message?: string;
+  estimated_tokens?: number;
+  estimated_cost?: number;
+  blocked_cost_savings?: number;
+};
+
 function App() {
   const [userId, setUserId] = useState("user_101");
   const [department, setDepartment] = useState("Finance");
@@ -31,6 +48,13 @@ function App() {
   const [result, setResult] = useState<AnalyzeResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [gatewayPrompt, setGatewayPrompt] = useState("");
+  const [gatewayResult, setGatewayResult] = useState<GatewayResult | null>(
+    null
+  );
+  const [isGatewayLoading, setIsGatewayLoading] = useState(false);
+  const [gatewayError, setGatewayError] = useState("");
 
   async function handleAnalyze() {
     setIsLoading(true);
@@ -63,6 +87,40 @@ function App() {
       );
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleGateway() {
+    setIsGatewayLoading(true);
+    setGatewayError("");
+    setGatewayResult(null);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/gateway", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": "guardrail-local-dev-key",
+        },
+        body: JSON.stringify({
+          prompt: gatewayPrompt,
+          user_id: userId,
+          department: department,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gateway request failed");
+      }
+
+      const data: GatewayResult = await response.json();
+      setGatewayResult(data);
+    } catch (error) {
+      setGatewayError(
+        "Could not connect to the gateway endpoint. Make sure FastAPI is running on port 8000."
+      );
+    } finally {
+      setIsGatewayLoading(false);
     }
   }
 
@@ -178,6 +236,101 @@ function App() {
                 redacted prompt, and cost details.
               </div>
             )
+          )}
+        </div>
+      </section>
+
+      <section className="wide-card">
+        <div className="card">
+          <h2>Gateway Demo</h2>
+          <p className="section-note">
+            This simulates the real AI gateway flow. Safe prompts can reach the
+            model. Risky prompts are blocked before model invocation.
+          </p>
+
+          <label htmlFor="gatewayPrompt">Gateway Prompt</label>
+          <textarea
+            id="gatewayPrompt"
+            rows={6}
+            value={gatewayPrompt}
+            onChange={(event) => setGatewayPrompt(event.target.value)}
+            placeholder="Ask a safe question or paste a risky prompt..."
+          />
+
+          <button
+            type="button"
+            onClick={handleGateway}
+            disabled={isGatewayLoading}
+          >
+            {isGatewayLoading ? "Running Gateway..." : "Run Gateway"}
+          </button>
+
+          {gatewayError && <div className="error-box">{gatewayError}</div>}
+
+          {gatewayResult && (
+            <div className="gateway-result">
+              <h3>Gateway Result</h3>
+
+              {gatewayResult.action && (
+                <div
+                  className={`action-pill ${gatewayResult.action.toLowerCase()}`}
+                >
+                  {gatewayResult.action}
+                </div>
+              )}
+
+              <div className="result-grid">
+                <p>
+                  <strong>Model Called:</strong>{" "}
+                  {String(gatewayResult.model_called ?? "N/A")}
+                </p>
+                <p>
+                  <strong>Selected Model:</strong>{" "}
+                  {gatewayResult.selected_model || "N/A"}
+                </p>
+                <p>
+                  <strong>Risk Score:</strong>{" "}
+                  {gatewayResult.risk_score ?? "N/A"}
+                </p>
+                <p>
+                  <strong>Risk Level:</strong>{" "}
+                  {gatewayResult.risk_level || "N/A"}
+                </p>
+                <p>
+                  <strong>Estimated Cost:</strong>{" "}
+                  {gatewayResult.estimated_cost ?? "N/A"}
+                </p>
+                <p>
+                  <strong>Blocked Savings:</strong>{" "}
+                  {gatewayResult.blocked_cost_savings ?? "N/A"}
+                </p>
+              </div>
+
+              <h3>Redacted Prompt</h3>
+              <p className="submitted-prompt">
+                {gatewayResult.redacted_prompt || "N/A"}
+              </p>
+
+              <h3>AI / Gateway Response</h3>
+              <p className="submitted-prompt">
+                {gatewayResult.ai_response ||
+                  gatewayResult.response ||
+                  gatewayResult.message ||
+                  "No response returned."}
+              </p>
+
+              <h3>Risk Reasons</h3>
+              {gatewayResult.risk_reasons &&
+              gatewayResult.risk_reasons.length > 0 ? (
+                <ul>
+                  {gatewayResult.risk_reasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No risk reasons returned.</p>
+              )}
+            </div>
           )}
         </div>
       </section>
