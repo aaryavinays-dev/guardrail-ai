@@ -1,13 +1,18 @@
 import { useState } from "react";
 import "./App.css";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
+const API_KEY = import.meta.env.VITE_API_KEY || "guardrail-local-dev-key";
+
 type Detections = {
   ssn?: boolean;
   email?: boolean;
   phone?: boolean;
   credit_card?: boolean;
   password?: boolean;
-  api_key?: boolean;
+  api_key?: boolean;  
   prompt_injection?: boolean;
 };
 
@@ -152,11 +157,11 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/analyze", {
+      const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": "guardrail-local-dev-key",
+          "x-api-key": API_KEY,
         },
         body: JSON.stringify({
           prompt: prompt,
@@ -191,11 +196,11 @@ function App() {
     setGatewayResult(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/gateway", {
+      const response = await fetch(`${API_BASE_URL}/gateway`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": "guardrail-local-dev-key",
+          "x-api-key": API_KEY,
         },
         body: JSON.stringify({
           prompt: gatewayPrompt,
@@ -224,10 +229,10 @@ function App() {
     setDepartmentError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/department-summary", {
+      const response = await fetch(`${API_BASE_URL}/department-summary`, {
         method: "GET",
         headers: {
-          "x-api-key": "guardrail-local-dev-key",
+          "x-api-key": API_KEY,
         },
       });
 
@@ -256,10 +261,10 @@ function App() {
     setAuditError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/audit-summary", {
+      const response = await fetch(`${API_BASE_URL}/audit-summary`, {
         method: "GET",
         headers: {
-          "x-api-key": "guardrail-local-dev-key",
+          "x-api-key": API_KEY,
         },
       });
 
