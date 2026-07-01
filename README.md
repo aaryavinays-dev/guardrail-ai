@@ -79,7 +79,7 @@ If a prompt is unsafe, GuardRail AI blocks it before model invocation. If it is 
 
 | Field              | Value                                                                                                   |
 | ------------------ | ------------------------------------------------------------------------------------------------------- |
-| Version            | `v5.5`                                                                                                  |
+| Version            | v5.5                                                                                                  |
 | Status             | Live Deployed Full-Stack MVP                                                                            |
 | Frontend           | React + TypeScript on Vercel                                                                            |
 | Backend            | FastAPI on Render                                                                                       |
@@ -763,11 +763,10 @@ Frontend API integration with fetch
 Loading and error states
 Full-stack cloud deployment
 Git-based feature delivery
+
 Roadmap
 Phase 1: Backend Governance Gateway
-
 Completed:
-
 Sensitive data detection
 Prompt injection detection
 Risk scoring
@@ -784,10 +783,9 @@ Provider failure handling
 Model routing
 100-case evaluation harness
 54 passing tests
+
 Phase 2: Frontend Governance Dashboard
-
 Completed:
-
 React + TypeScript dashboard
 Prompt Analyzer UI
 Gateway Demo UI
@@ -802,7 +800,6 @@ Cost formatting
 Phase 3: Live Deployment
 
 Completed:
-
 Vercel frontend deployment
 Render backend deployment
 Neon PostgreSQL database connection
@@ -812,10 +809,9 @@ Live audit summary validation
 Live department summary validation
 Live prompt analyzer validation
 Live gateway validation
+
 Phase 4: Future Provider-Agnostic Gateway
-
 Planned:
-
 Claude adapter
 Gemini adapter
 AWS Bedrock adapter
@@ -825,7 +821,6 @@ Provider selection by sensitivity, cost, latency, and compliance
 Phase 5: Future DevOps Improvements
 
 Planned:
-
 Docker support
 GitHub Actions
 AWS deployment option
