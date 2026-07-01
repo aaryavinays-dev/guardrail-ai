@@ -28,9 +28,10 @@ def detect_api_key(prompt: str) -> bool:
 
 def detect_password(prompt: str) -> bool:
     password_patterns = [
-        r"\b(password|pwd|passcode)\s*[:=]\s*\S+",
-        r"\b(password|pwd|passcode)\s+(is|as)\s+\S+",
-        r"\b(production|database|admin|root)\s+password\s+\S+",
+        r"\bpassword\b\s*(is|=|:)?\s*[A-Za-z0-9!@#$%^&*()_+\-]{6,}",
+        r"\bpasscode\b\s*(is|=|:)?\s*[A-Za-z0-9!@#$%^&*()_+\-]{6,}",
+        r"\bpwd\b\s*(is|=|:)?\s*[A-Za-z0-9!@#$%^&*()_+\-]{6,}",
+        r"\b(production|database|admin|root|portal|temporary|temp)\s+password\s*(is|=|:)?\s*[A-Za-z0-9!@#$%^&*()_+\-]{6,}",
     ]
 
     for pattern in password_patterns:
@@ -45,17 +46,35 @@ def detect_prompt_injection(prompt: str) -> bool:
         r"ignore\s+(all\s+)?(previous|prior|earlier)\s+instructions",
         r"reveal\s+(the\s+)?system\s+prompt",
         r"show\s+(me\s+)?(the\s+)?system\s+prompt",
-        r"bypass\s+(the\s+)?(policy|rules|safety)",
-        r"forget\s+(all\s+)?(your\s+)?rules",
-        r"disable\s+(all\s+)?safety",
+        r"bypass\s+(all\s+)?(company\s+)?(policies|policy|rules|safety|safety\s+rules|safety\s+filters|guardrails)",
+        r"disable\s+(all\s+)?(your\s+)?safety\s+(filters|rules|policies)",
+        r"override\s+(the\s+)?policy\s+engine",
         r"override\s+(the\s+)?instructions",
-        r"act\s+as\s+(an\s+)?unrestricted",
-        r"pretend\s+you\s+are\s+not\s+restricted",
+        r"forget\s+(all\s+)?(your\s+)?rules",
+        r"show\s+(me\s+)?(your\s+)?hidden\s+instructions",
+        r"confidential\s+system\s+rules",
+        r"pretend\s+you\s+are\s+not\s+(restricted|bound)",
         r"not\s+restricted\s+by\s+safety\s+policies",
         r"jailbreak",
         r"developer\s+mode",
         r"\bDAN\b",
+        r"previous\s+instructions\s+are\s+invalid",
+        r"follow\s+only\s+my\s+new\s+instructions",
+        r"reveal\s+(the\s+)?confidential\s+prompt",
+        r"ignore\s+compliance\s+rules",
+        r"remove\s+all\s+safety\s+policies",
+        r"unrestricted\s+mode",
+        r"system\s+rules?",
+        r"compliance\s+checker",
+        r"downgrade\s+this\s+risk",
+        r"do\s+not\s+log\s+the\s+request",
+        r"do\s+not\s+write\s+this\s+request\s+to\s+the\s+audit\s+log",
+        r"show\s+any\s+stored\s+api\s+keys",
+        r"hidden\s+developer\s+instructions",
+        r"provide\s+hidden\s+instructions",
+        r"reveal\s+restricted\s+data",
     ]
+
 
     for pattern in suspicious_patterns:
         if re.search(pattern, prompt, re.IGNORECASE):
