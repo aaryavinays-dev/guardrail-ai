@@ -46,6 +46,28 @@ This changelog documents the evolution of GuardRail AI from a foundational FastA
 
 ---
 
+## v5.5 — Live Deployment
+
+### Added
+- Deployed React + TypeScript frontend to Vercel.
+- Deployed FastAPI backend to Render.
+- Connected production backend to Neon PostgreSQL.
+- Added live frontend, backend API, and Swagger documentation links to README.
+- Validated production audit summary and department summary dashboards.
+- Validated production prompt analysis and gateway flows.
+
+### Verified
+- Audit Summary loads production logs from Neon.
+- Department Summary displays Finance and Engineering governance metrics.
+- Prompt Analyzer blocks SSN prompts and redacts sensitive data.
+- Gateway blocks risky prompts before model invocation.
+- Gateway allows safe prompts and routes them to the selected model.
+- Cost tracking and blocked savings display correctly in the live dashboard.
+
+### Notes
+- Render free-tier deployments may have a cold start delay on the first request.
+- External LLM provider calls depend on valid API key, quota, billing, and provider availability.
+
 ## Version 5.4 — Frontend Polish and Governance Metrics
 
 ### Added

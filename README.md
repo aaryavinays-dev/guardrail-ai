@@ -1,5 +1,13 @@
 # GuardRail AI
 
+## Live Demo
+
+- Frontend: https://guardrail-ai-iota.vercel.app
+- Backend API: https://guardrail-ai-backend.onrender.com
+- Backend Docs: https://guardrail-ai-backend.onrender.com/docs
+
+> Note: The backend is hosted on Render, so the first request may take a few seconds if the service is waking up.
+
 ## Enterprise AI Governance Gateway for Prompt Security, Policy Enforcement, Cost Tracking, and Model Routing
 
 GuardRail AI is a full-stack enterprise AI governance gateway that analyzes prompts before AI model invocation. It detects sensitive data and prompt injection attempts, redacts unsafe values, applies risk scoring and department-specific policies, tracks token and cost usage, estimates blocked cost savings, routes safe prompts to AI models, and stores structured audit logs in PostgreSQL.
@@ -1017,3 +1025,43 @@ The long-term vision is to evolve GuardRail AI into an AI platform control layer
 | React dashboard          | Complete     |
 | Frontend polish          | Complete     |
 | Deployment               | Planned next |
+
+## Current Limitations
+
+GuardRail AI is a portfolio-grade enterprise AI governance prototype, not a production security product.
+
+Current limitations include:
+
+- Detection logic is rule-based and uses synthetic test cases rather than a large enterprise red-team dataset.
+- PII, secret, and prompt-injection detection would need deeper validation before real production use.
+- External LLM calls depend on provider API key, quota, billing, and availability.
+- The current authentication layer uses API-key based access and does not include SSO, RBAC, or enterprise identity integration.
+- Department policies are configured in code rather than through an admin policy builder.
+- Cost estimates are approximate and based on token estimation logic rather than provider billing exports.
+- The system does not yet include production monitoring, alerting, or large-scale multi-tenant controls.
+
+Future production versions would require larger evaluation datasets, enterprise policy configuration, SSO/RBAC, provider-level moderation checks, audit exports, monitoring, and security review.
+
+## Evaluation Summary
+
+GuardRail AI includes automated tests and an evaluation harness to validate prompt safety, detection behavior, policy enforcement, and regression stability.
+
+| Eval Type | Dataset Size | Result |
+|---|---:|---|
+| Safe business prompts | Included in eval set | Passing |
+| PII / sensitive data prompts | Included in eval set | Passing |
+| Prompt injection / jailbreak prompts | Included in eval set | Passing |
+| API key / secret detection | Included in eval set | Passing |
+| Department policy checks | Included in eval set | Passing |
+| Cost and token tracking | Included in eval set | Passing |
+| Regression tests | 54 tests | Passing |
+| Evaluation harness | 28 prompts | 28/28 passing |
+
+Current validation status:
+
+```bash
+pytest
+python evaluation/run_eval.py
+
+54 automated tests passing
+28/28 evaluation prompts passing
